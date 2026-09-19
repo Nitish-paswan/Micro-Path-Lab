@@ -1,0 +1,3284 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MICRO PATH - Pathology Lab & Healthcare Services</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+            },
+            medical: {
+              red: '#e11d48',
+              navy: '#0f172a',
+              emerald: '#059669',
+              amber: '#d97706',
+              surface: '#f8fafc'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Devanagari', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom utility and pulse animation */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .listening-pulse {
+      animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-cyan-100 selection:text-cyan-900">
+
+  <!-- Floating Toast Feedback -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-slate-700 max-w-md">
+    <i id="toast-icon" data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+    <span id="toast-msg" class="text-sm font-medium">Notification message here</span>
+  </div>
+
+  <!-- Top Emergency Disclaimer Banner -->
+  <div class="bg-rose-50 border-b border-rose-200 text-rose-900 text-xs sm:text-sm py-2 px-4 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 font-medium">
+        <span class="inline-flex items-center justify-center p-1 bg-rose-600 text-white rounded-md shrink-0">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+        </span>
+        <span data-i18n="emergency_banner">
+          <strong>Medical Emergency?</strong> Do not wait for online reply. Contact local ambulance (+9176/3406/8199) or visit the nearest ER immediately.
+        </span>
+      </div>
+      <button onclick="this.parentElement.parentElement.style.display='none'" class="text-rose-500 hover:text-rose-800 shrink-0" aria-label="Dismiss Alert">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-[37px] z-30 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand Logo -->
+        <a href="#home" onclick="navigateTo('home')" class="flex items-center gap-3 group cursor-pointer focus:outline-none">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-700 via-cyan-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-cyan-600/20 group-hover:scale-105 transition-transform">
+            <i data-lucide="microscope" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-2xl font-extrabold tracking-tight text-slate-900">MICRO<span class="text-cyan-600">PATH</span></span>
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            <p class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase -mt-1" data-i18n="tagline">Pathology Lab & Healthcare</p>
+          </div>
+        </a>
+
+        <!-- Desktop Menu Links -->
+        <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
+          <button onclick="navigateTo('home')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-cyan-700 bg-cyan-50 hover:bg-cyan-100 transition-colors" data-page="home" data-i18n="nav_home">Home</button>
+          <button onclick="navigateTo('tests')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="tests" data-i18n="nav_tests">Pathology Tests</button>
+          <button onclick="navigateTo('ask-doctor')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="ask-doctor" data-i18n="nav_ask">Ask a Doctor</button>
+          <button onclick="navigateTo('appointment')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="appointment" data-i18n="nav_appointment">Book Appointment</button>
+          <button onclick="navigateTo('home-collection')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="home-collection" data-i18n="nav_collection">Home Collection</button>
+          <button onclick="navigateTo('upload-report')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="upload-report" data-i18n="nav_upload">Upload Report</button>
+          <button onclick="navigateTo('contact')" class="nav-btn px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" data-page="contact" data-i18n="nav_contact">Contact Us</button>
+        </nav>
+
+        <!-- Right Side: Portal Selector, Language Switcher, Notifications -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          
+          <!-- Bilingual Language Switcher -->
+          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 shadow-inner">
+            <button id="lang-en" onclick="setLanguage('en')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-white text-cyan-900 shadow-sm transition-all">EN</button>
+            <button id="lang-hi" onclick="setLanguage('hi')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">हिंदी</button>
+          </div>
+
+          <!-- Notification Bell Trigger -->
+          <div class="relative">
+            <button onclick="toggleNotificationDrawer()" class="relative p-2 rounded-xl text-slate-600 hover:text-cyan-700 hover:bg-slate-100 transition-colors" title="Notifications" aria-label="Notifications">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+            </button>
+          </div>
+
+          <!-- Portal Role Dropdown Switcher (Simulated Authenticated Modes) -->
+          <div class="relative group">
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium shadow-sm transition-colors">
+              <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i>
+              <span id="current-role-badge">Patient</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-70"></i>
+            </button>
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 hidden group-hover:block hover:block z-50 text-xs">
+              <div class="px-3 py-1.5 font-semibold text-slate-400 uppercase tracking-wider text-[10px]" data-i18n="portal_switch">Switch Portal Demo</div>
+              <button onclick="switchRole('patient')" class="w-full text-left px-3 py-2 hover:bg-cyan-50 flex items-center gap-2 text-slate-700 font-medium">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-cyan-600"></i> Patient Portal
+              </button>
+              <button onclick="switchRole('doctor')" class="w-full text-left px-3 py-2 hover:bg-cyan-50 flex items-center gap-2 text-slate-700 font-medium">
+                <i data-lucide="stethoscope" class="w-3.5 h-3.5 text-teal-600"></i> Doctor Dashboard
+              </button>
+              <button onclick="switchRole('admin')" class="w-full text-left px-3 py-2 hover:bg-cyan-50 flex items-center gap-2 text-slate-700 font-medium">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i> Admin Panel
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Hamburger Toggle -->
+          <button onclick="toggleMobileNav()" class="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100" aria-label="Toggle menu">
+            <i id="mobile-menu-icon" data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2 shadow-xl">
+      <button onclick="navigateTo('home')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_home">Home</button>
+      <button onclick="navigateTo('tests')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_tests">Pathology Tests</button>
+      <button onclick="navigateTo('ask-doctor')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_ask">Ask a Doctor</button>
+      <button onclick="navigateTo('appointment')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_appointment">Book Appointment</button>
+      <button onclick="navigateTo('home-collection')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_collection">Home Collection</button>
+      <button onclick="navigateTo('upload-report')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_upload">Upload Report</button>
+      <button onclick="navigateTo('patient-dash')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-cyan-800 bg-cyan-50" data-i18n="tab_dashboard">Patient Dashboard</button>
+      <button onclick="navigateTo('contact')" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-slate-800 hover:bg-slate-100" data-i18n="nav_contact">Contact Us</button>
+    </div>
+  </header>
+
+  <!-- Notification Center Drawer Modal -->
+  <div id="notif-drawer" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden transition-opacity">
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="bell" class="w-5 h-5 text-cyan-600"></i>
+          <h3 class="font-bold text-slate-900" data-i18n="notifications_title">Notifications & Updates</h3>
+        </div>
+        <button onclick="toggleNotificationDrawer()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="notification-list" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+        <!-- Dynamically injected notifications -->
+      </div>
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center text-xs text-slate-500">
+        <span data-i18n="notif_sync">Automated SMS & Email Sync Active</span>
+        <button onclick="clearAllNotifications()" class="text-cyan-700 hover:underline font-medium" data-i18n="clear_all">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="flex-1">
+
+    <!-- VIEW: HOME PAGE -->
+    <section id="view-home" class="page-view block">
+      
+      <!-- Hero Banner -->
+      <div class="relative bg-gradient-to-b from-cyan-50/70 via-white to-slate-50 py-16 lg:py-24 overflow-hidden border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div class="grid lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-6 text-left">
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-100/70 text-cyan-800 text-xs font-semibold tracking-wide">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-700"></i>
+                <span data-i18n="hero_pill">NABL Accredited Standard Lab Partner • ISO 15189 Ready</span>
+              </div>
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+                MICRO <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-teal-600">PATH</span>
+                <span class="block text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-700 mt-2" data-i18n="hero_subtitle">
+                  Reliable Laboratory Services & Doctor Support
+                </span>
+              </h1>
+              <p class="text-slate-600 text-base sm:text-lg max-w-2xl leading-relaxed" data-i18n="hero_desc">
+                High-precision blood testing, pathology investigations, and verified clinical guidance. Speak or write your queries in Hindi and English with ease.
+              </p>
+
+              <!-- Global Search Bar -->
+              <div class="pt-2">
+                <div class="relative max-w-xl">
+                  <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                  </div>
+                  <input type="text" id="global-search-input" onkeyup="handleGlobalSearch(event)" placeholder="Search CBC, Lipid Profile, Thyroid, Doctor, or service..." class="w-full pl-11 pr-28 py-3.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-600 placeholder-slate-400">
+                  <button onclick="triggerGlobalSearch()" class="absolute right-2 top-2 bottom-2 px-4 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded-xl transition-colors flex items-center gap-1">
+                    <span data-i18n="search_btn">Search</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- CTA Buttons -->
+              <div class="flex flex-wrap items-center gap-3 pt-4">
+                <button onclick="navigateTo('tests')" class="px-6 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-sm shadow-md shadow-cyan-600/20 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                  <i data-lucide="flask-conical" class="w-4 h-4"></i>
+                  <span data-i18n="btn_book_test">Book a Test</span>
+                </button>
+                <button onclick="navigateTo('ask-doctor')" class="px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-md flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                  <i data-lucide="mic" class="w-4 h-4 text-cyan-400"></i>
+                  <span data-i18n="btn_ask_doctor">Ask a Doctor</span>
+                </button>
+                <button onclick="navigateTo('appointment')" class="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm transition-all">
+                  <span data-i18n="btn_book_appointment">Book Appointment</span>
+                </button>
+              </div>
+
+              <!-- Badges / Stats -->
+              <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200/80 max-w-lg">
+                <div>
+                  <div class="text-xl sm:text-2xl font-black text-cyan-700">120+</div>
+                  <div class="text-xs text-slate-500 font-medium" data-i18n="stat_tests">Diagnostic Tests</div>
+                </div>
+                <div>
+                  <div class="text-xl sm:text-2xl font-black text-cyan-700">60 Min</div>
+                  <div class="text-xs text-slate-500 font-medium" data-i18n="stat_collection">Home Collection Slot</div>
+                </div>
+                <div>
+                  <div class="text-xl sm:text-2xl font-black text-cyan-700">Bilingual</div>
+                  <div class="text-xs text-slate-500 font-medium" data-i18n="stat_voice">Voice & Text Doctor</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Hero Graphic Card / Pathology Badge Showcase -->
+            <div class="lg:col-span-5">
+              <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 relative">
+                <div class="absolute -top-3 -right-3 bg-teal-500 text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow">
+                  Trusted by 25,000+ Patients
+                </div>
+
+                <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
+                  <div class="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-8 h-8"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-slate-900" data-i18n="hero_card_title">Full Body Health Checkup</h2>
+                    <p class="text-xs text-slate-500" data-i18n="hero_card_sub">Includes 64 vital pathology indicators</p>
+                  </div>
+                </div>
+
+                <div class="py-4 space-y-3">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-2 text-slate-700 font-medium"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Complete Blood Count (CBC)</span>
+                    <span class="text-slate-500">Same Day</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-2 text-slate-700 font-medium"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Liver & Kidney Function</span>
+                    <span class="text-slate-500">8 Hrs Fasting</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-2 text-slate-700 font-medium"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Lipid & Blood Sugar (HbA1c)</span>
+                    <span class="text-slate-500">NABL Verified</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-2 text-slate-700 font-medium"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Free Doctor Report Audio Review</span>
+                    <span class="text-cyan-700 font-semibold">Included</span>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <span class="text-xs text-slate-400 line-through">₹2,499</span>
+                    <div class="text-2xl font-extrabold text-slate-900">₹999 <span class="text-xs font-normal text-slate-500">only</span></div>
+                  </div>
+                  <button onclick="quickBookTest('Comprehensive Wellness Package', 999)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
+                    <span data-i18n="btn_book_now">Book Test Now</span>
+                  </button>
+                </div>
+
+                <!-- Emergency Disclaimer inside card -->
+                <div class="mt-4 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-start gap-2">
+                  <i data-lucide="info" class="w-4 h-4 shrink-0 text-amber-600 mt-0.5"></i>
+                  <p data-i18n="disclaimer_mini">Reports provide diagnostic measurements for clinical correlation by doctors. Test results alone do not constitute medical prescription.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 Core Service Cards Grid -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900" data-i18n="services_heading">Complete Pathology & Diagnostic Ecosystem</h2>
+          <p class="text-slate-500 text-sm mt-2" data-i18n="services_sub">Seamless care from phlebotomy at your door to qualified physician audio guidance.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Card 1: Blood Tests -->
+          <div onclick="navigateTo('tests')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="droplet" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_blood">Blood Tests</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_blood_desc">CBC, Blood Sugar, HbA1c, Lipid, Thyroid, Iron, and Vitamin profiles with automated reporting.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_explore">View 40+ Blood Tests</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Card 2: Pathology Tests -->
+          <div onclick="navigateTo('tests')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="microscope" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_path">Pathology Tests</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_path_desc">Microbiology culture, Serology, Stool & Urine routine, Hormone panels, and Biochemistry.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_explore">Browse Pathology Catalog</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Card 3: Doctor Consultation -->
+          <div onclick="navigateTo('ask-doctor')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="stethoscope" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_doc">Doctor Consultation</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_doc_desc">Ask clinical questions in Hindi or English using voice or text. Get physician reviewed guidance.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_doc_action">Ask in Hindi / English</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Card 4: Report Upload -->
+          <div onclick="navigateTo('upload-report')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="file-up" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_upload">Report Upload & Review</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_upload_desc">Upload past PDF or photo reports. Our pathologists break down parameters into plain language.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_upload_action">Upload Lab Document</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Card 5: Home Sample Collection -->
+          <div onclick="navigateTo('home-collection')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="home" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_home">Home Sample Collection</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_home_desc">Certified phlebotomists arrive with cold-chain transport at your preferred hour.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_home_action">Request At-Home Visit</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Card 6: Health Support -->
+          <div onclick="navigateTo('contact')" class="bg-white p-6 rounded-2xl border border-slate-200/80 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i data-lucide="headphones" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors" data-i18n="srv_support">24/7 Laboratory Helpdesk</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mt-2" data-i18n="srv_support_desc">Need assistance with fasting rules, critical reporting alerts, or sample pickup status? Call us directly.</p>
+            <div class="mt-4 text-xs font-semibold text-cyan-600 flex items-center gap-1">
+              <span data-i18n="srv_support_action">Contact Lab Desk</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Voice & Hindi/English Spotlight Banner -->
+      <div class="bg-slate-900 text-white py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-8 space-y-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-900/60 border border-cyan-700 text-cyan-300 text-xs font-medium">
+                <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                <span data-i18n="voice_feat_title">Voice-Enabled Healthcare Experience</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-bold tracking-tight" data-i18n="voice_feat_heading">
+                Speak your symptoms in Hindi or English. Listen to doctor responses.
+              </h2>
+              <p class="text-slate-400 text-sm max-w-2xl" data-i18n="voice_feat_sub">
+                Designed especially for seniors, busy parents, and anyone who prefers speaking over typing. Tap the mic, speak naturally, review your words, and hit submit.
+              </p>
+            </div>
+            <div class="lg:col-span-4 flex justify-start lg:justify-end">
+              <button onclick="navigateTo('ask-doctor')" class="px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-bold text-sm shadow-lg hover:from-cyan-600 hover:to-teal-600 flex items-center gap-3">
+                <i data-lucide="mic" class="w-5 h-5"></i>
+                <span data-i18n="voice_try_btn">Try "Ask a Doctor" Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: PATHOLOGY & BLOOD TESTS CATALOG -->
+    <section id="view-tests" class="page-view hidden py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <div class="inline-flex items-center gap-1.5 text-cyan-700 text-xs font-bold uppercase tracking-wider mb-1">
+              <i data-lucide="flask-conical" class="w-4 h-4"></i>
+              <span data-i18n="cat_title_tag">MICRO PATH Diagnostic Menu</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900" data-i18n="test_catalog_heading">Pathology & Blood Tests</h2>
+            <p class="text-slate-500 text-sm mt-1" data-i18n="test_catalog_sub">Explore preparation requirements, clinical utilities, sample specs, and transparent fees.</p>
+          </div>
+
+          <!-- Category filter buttons -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar" id="test-category-pills">
+            <button onclick="filterTestCategory('all')" class="cat-pill active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-cyan-600 text-white whitespace-nowrap shadow-sm">All Tests (12)</button>
+            <button onclick="filterTestCategory('blood')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 whitespace-nowrap">Blood Tests</button>
+            <button onclick="filterTestCategory('organ')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 whitespace-nowrap">Organ Profiles (LFT/KFT)</button>
+            <button onclick="filterTestCategory('special')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 whitespace-nowrap">Hormone & Urine</button>
+          </div>
+        </div>
+
+        <!-- Tests Search inside catalog -->
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
+            <input type="text" id="test-filter-input" onkeyup="filterTestsByKeyword()" placeholder="Search test name, sample type, or clinical condition..." class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+          </div>
+          <div class="text-xs text-slate-500 flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span data-i18n="disclaimer_note">Clinical Correlation: Test parameters require physician interpretation.</span>
+          </div>
+        </div>
+
+        <!-- Tests Grid Container -->
+        <div id="tests-grid" class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by JavaScript renderTestsCatalog() -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: ASK A DOCTOR (VOICE + TEXT) -->
+    <section id="view-ask-doctor" class="page-view hidden py-10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-2">
+            <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+            <span data-i18n="voice_desk_badge">Bilingual Speech-to-Text Clinical Desk</span>
+          </div>
+          <h2 class="text-3xl font-extrabold text-slate-900" data-i18n="ask_doctor_title">Consult Our Medical Officer</h2>
+          <p class="text-slate-500 text-sm mt-1" data-i18n="ask_doctor_sub">Type or speak your symptoms in English or Hindi. A certified doctor reviews your submission.</p>
+        </div>
+
+        <!-- Medical Warning Card -->
+        <div class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+          <div>
+            <strong data-i18n="warning_label">Important Medical Notice:</strong>
+            <span data-i18n="warning_desc"> Online queries are for general triage, symptom clarification, and test preparation guidance. It does NOT substitute emergency rooms or face-to-face diagnosis.</span>
+          </div>
+        </div>
+
+        <!-- Voice & Query Composer Box -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+          
+          <!-- Language & Input Preferences -->
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-slate-700 block" data-i18n="voice_input_lang">Voice Recognition Language</span>
+              <div class="flex items-center gap-2 mt-1.5">
+                <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
+                  <input type="radio" name="speech-lang" value="hi-IN" id="speech-lang-hi" class="text-cyan-600 focus:ring-cyan-500">
+                  <span class="font-medium">Hindi (हिंदी - hi-IN)</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer ml-3">
+                  <input type="radio" name="speech-lang" value="en-IN" id="speech-lang-en" checked class="text-cyan-600 focus:ring-cyan-500">
+                  <span class="font-medium">English (Indian/Intl - en-IN)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Speech Status indicator -->
+            <div id="recording-status" class="hidden items-center gap-2 px-3 py-1.5 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+              <span id="recording-status-text">Listening... Speak clearly</span>
+            </div>
+          </div>
+
+          <!-- Patient Details Fields -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Patient Name *</label>
+              <input type="text" id="query-patient-name" placeholder="e.g. Priya Sharma" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Mobile Number *</label>
+              <input type="tel" id="query-patient-phone" placeholder="e.g. +91 98765 43210" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Problem / Symptom Text Area with Integrated Microphone trigger -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span data-i18n="query_label">Describe your health query or symptoms *</span>
+              </label>
+              <span class="text-[11px] text-slate-400" data-i18n="editable_note">Editable transcript after voice input</span>
+            </div>
+
+            <div class="relative">
+              <textarea id="query-text-box" rows="5" placeholder="Type here or click the microphone to speak... For example: 'मुझे पिछले दो दिनों से सिरदर्द और बुखार है' or 'I have been having mild chest congestion for two days.'" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none leading-relaxed text-slate-800 custom-scrollbar"></textarea>
+              
+              <!-- Floating Microphone Button -->
+              <div class="absolute bottom-3 right-3 flex items-center gap-2">
+                <button type="button" id="mic-btn" onclick="toggleSpeechRecognition()" class="p-3 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white shadow-md transition-all flex items-center gap-2 text-xs font-semibold focus:outline-none">
+                  <i data-lucide="mic" class="w-4 h-4" id="mic-icon"></i>
+                  <span id="mic-btn-label" data-i18n="mic_speak_btn">Speak</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Helper Example Chips -->
+          <div class="space-y-2">
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider" data-i18n="quick_examples">Quick Examples (Click to insert):</span>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <button onclick="insertExampleText('मुझे पिछले दो दिनों से काफी कमजोरी और सिरदर्द महसूस हो रहा है।')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-colors">
+                "मुझे पिछले दो दिनों से कमजोरी महसूस हो रही है।"
+              </button>
+              <button onclick="insertExampleText('I have high blood sugar reports and need to know fasting requirements for HbA1c.')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-colors">
+                "Fasting requirements for HbA1c test?"
+              </button>
+            </div>
+          </div>
+
+          <!-- Consent & Submit -->
+          <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+            <label class="inline-flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
+              <input type="checkbox" id="consent-check" checked class="rounded text-cyan-600 focus:ring-cyan-500">
+              <span data-i18n="consent_text">I consent to sharing this info for doctor triage (Confidential).</span>
+            </label>
+
+            <button onclick="submitPatientQuery()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs shadow-md shadow-cyan-700/20 flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span data-i18n="btn_submit_query">Submit to Doctor</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Recent Queries & Live Doctor Audio Responses List -->
+        <div class="mt-12">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="message-square" class="w-5 h-5 text-cyan-600"></i>
+              <span data-i18n="recent_queries_title">Your Queries & Doctor Voice Replies</span>
+            </h3>
+            <span class="text-xs text-slate-500" data-i18n="tap_listen_hint">Tap "Listen" to hear voice synthesis</span>
+          </div>
+
+          <div id="patient-queries-thread" class="space-y-4">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: BOOK APPOINTMENT -->
+    <section id="view-appointment" class="page-view hidden py-10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold mb-2">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span data-i18n="apt_pill">Clinical OPD & Pathologist Consultation</span>
+          </div>
+          <h2 class="text-3xl font-extrabold text-slate-900" data-i18n="book_apt_title">Request an In-Person or Tele Appointment</h2>
+          <p class="text-slate-500 text-sm mt-1" data-i18n="book_apt_sub">Confirm slots with senior biochemists, pathologists, and consultant physicians.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+          <form id="appointment-form" onsubmit="handleAppointmentSubmit(event)" class="space-y-6">
+            
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Patient Name *</label>
+                <input type="text" id="apt-name" required placeholder="Full name" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_age">Age & Gender *</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <input type="number" id="apt-age" required min="1" max="115" placeholder="Age (e.g. 38)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <select id="apt-gender" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Phone Number *</label>
+                <input type="tel" id="apt-phone" required placeholder="+91 9876543210" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_doc_select">Select Doctor / Specialist *</label>
+                <select id="apt-doctor" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option value="Dr. Arvind Varma (MD Pathology, 14+ yrs)">Dr. Arvind Varma (MD Pathology, 14+ yrs)</option>
+                  <option value="Dr. Meera Iyer (Clinical Biochemist & Hemato)">Dr. Meera Iyer (Clinical Biochemist & Hemato)</option>
+                  <option value="Dr. Rajesh Nair (Consultant Physician)">Dr. Rajesh Nair (Consultant Physician)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_date">Preferred Date *</label>
+                <input type="date" id="apt-date" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_time">Preferred Time Slot *</label>
+                <select id="apt-time" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option value="09:00 AM - 10:30 AM">09:00 AM - 10:30 AM</option>
+                  <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
+                  <option value="03:00 PM - 05:00 PM">03:00 PM - 05:00 PM</option>
+                  <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_lang_pref">Language Preference *</label>
+                <select id="apt-lang" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option value="Hindi (हिंदी)">Hindi (हिंदी)</option>
+                  <option value="English">English</option>
+                  <option value="Bilingual (Hindi + English)">Bilingual (Hindi + English)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_mode">Consultation Mode *</label>
+                <select id="apt-mode" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option value="At Pathology Lab (Physical OPD)">At Pathology Lab (Physical OPD)</option>
+                  <option value="Tele-Consultation (Phone / Video Call)">Tele-Consultation (Phone / Video Call)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_reason">Reason for Visit / Symptoms *</label>
+              <textarea id="apt-reason" rows="3" required placeholder="Briefly describe your symptoms or the test reports you want to discuss..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-xs text-slate-500" data-i18n="apt_instant_sms">Instant SMS confirmation sent on submission</span>
+              <button type="submit" class="px-7 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs shadow-md transition-all">
+                <span data-i18n="btn_book_appointment">Book Appointment</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Appointment Status Tracking Card -->
+        <div class="mt-8 bg-slate-100/80 rounded-2xl p-5 border border-slate-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider" data-i18n="apt_status_title">Active Appointment Bookings</h4>
+              <p class="text-[11px] text-slate-500" data-i18n="apt_status_sub">Track status updates from Requested to Confirmed</p>
+            </div>
+            <span class="px-2 py-1 bg-white rounded text-[11px] font-semibold text-cyan-800 border" id="apt-counter-pill">2 Scheduled</span>
+          </div>
+          <div id="appointment-status-list" class="mt-4 space-y-2">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: HOME SAMPLE COLLECTION -->
+    <section id="view-home-collection" class="page-view hidden py-10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-2">
+            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+            <span data-i18n="home_pill">Doorstep Phlebotomy Service</span>
+          </div>
+          <h2 class="text-3xl font-extrabold text-slate-900" data-i18n="home_heading">Home Sample Collection</h2>
+          <p class="text-slate-500 text-sm mt-1" data-i18n="home_sub">Hygienic vacuum-sealed collection tubes, temperature-monitored carrier, and verified phlebotomists.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+          <form id="collection-form" onsubmit="handleHomeCollectionSubmit(event)" class="space-y-6">
+            
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Patient Name *</label>
+                <input type="text" id="col-name" required placeholder="Patient full name" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Mobile Number (WhatsApp) *</label>
+                <input type="tel" id="col-phone" required placeholder="+91 98765 00000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="col_address">Full Door Address (House / Street / Landmark / Pincode) *</label>
+              <textarea id="col-address" rows="2" required placeholder="Flat 402, Green Valley Apartments, Near City Hospital, Pincode 400001" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="apt_date">Preferred Date *</label>
+                <input type="date" id="col-date" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="col_slot">Morning Fasting Slot *</label>
+                <select id="col-slot" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option value="06:30 AM - 07:30 AM (Strict Fasting)">06:30 AM - 07:30 AM (Strict Fasting)</option>
+                  <option value="07:30 AM - 08:30 AM">07:30 AM - 08:30 AM</option>
+                  <option value="08:30 AM - 10:00 AM">08:30 AM - 10:00 AM</option>
+                  <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM (Random Blood Sugar)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="col_test_req">Test Required *</label>
+                <input type="text" id="col-tests" required placeholder="e.g. CBC, HbA1c, Lipid Profile" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="p-3 bg-cyan-50 border border-cyan-200 rounded-xl flex items-center gap-3 text-xs text-cyan-900">
+              <i data-lucide="shield-check" class="w-5 h-5 text-cyan-700 shrink-0"></i>
+              <span data-i18n="col_safety_seal">Our phlebotomists follow WHO sterile draw guidelines. Unopened needle packs opened right in front of you.</span>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-xs text-slate-500" data-i18n="col_fee_info">Free collection for packages over ₹699</span>
+              <button type="submit" class="px-7 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+                <span data-i18n="btn_request_collection">Request Home Collection</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: LAB REPORT UPLOAD & REVIEWS -->
+    <section id="view-upload-report" class="page-view hidden py-10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold mb-2">
+            <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+            <span data-i18n="upload_pill">Encrypted Lab Vault</span>
+          </div>
+          <h2 class="text-3xl font-extrabold text-slate-900" data-i18n="upload_heading">Upload Laboratory Reports</h2>
+          <p class="text-slate-500 text-sm mt-1" data-i18n="upload_sub">Upload your laboratory report for review by an authorized doctor/lab professional.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+          
+          <!-- File Drop Zone -->
+          <div id="drop-zone" onclick="document.getElementById('report-file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-cyan-500 rounded-2xl p-8 text-center cursor-pointer transition-all bg-slate-50/50 hover:bg-cyan-50/30">
+            <input type="file" id="report-file-input" onchange="handleFileSelected(this)" accept=".pdf,.png,.jpg,.jpeg" class="hidden">
+            
+            <div class="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+            </div>
+            
+            <h3 class="text-sm font-bold text-slate-800" data-i18n="drop_title">Click to upload or drag & drop laboratory report</h3>
+            <p class="text-xs text-slate-500 mt-1" data-i18n="drop_formats">Supported formats: PDF, JPG, JPEG, PNG (Max file size: 10MB)</p>
+            
+            <div id="file-preview-pill" class="mt-4 hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-semibold">
+              <i data-lucide="file-check" class="w-4 h-4"></i>
+              <span id="file-name-label">blood_report_2026.pdf</span>
+            </div>
+          </div>
+
+          <!-- Metadata for Report -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Patient Name *</label>
+              <input type="text" id="upload-patient-name" placeholder="Patient's legal name" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Mobile Number *</label>
+              <input type="tel" id="upload-patient-phone" placeholder="Contact number for SMS update" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="upload_note">Notes / Specific Concern for Doctor (Optional)</label>
+            <textarea id="upload-patient-note" rows="2" placeholder="e.g. Please check my platelet count and cholesterol levels from this test..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-cyan-600 focus:outline-none"></textarea>
+          </div>
+
+          <!-- Action bar -->
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <div class="flex items-center gap-2 text-[11px] text-slate-500">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span data-i18n="hipaa_privacy">Strict confidentiality. Encrypted storage.</span>
+            </div>
+            <button onclick="submitReportUpload()" class="px-6 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span data-i18n="btn_upload_submit">Submit Report for Review</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Stored Reports Table / Gallery -->
+        <div class="mt-10">
+          <h3 class="text-lg font-bold text-slate-900 mb-4" data-i18n="reports_vault_title">Your Uploaded Lab Reports & Reference Tracking</h3>
+          <div id="patient-uploaded-reports" class="space-y-3">
+            <!-- Injected by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: PATIENT DASHBOARD -->
+    <section id="view-patient-dash" class="page-view hidden py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold text-cyan-600 uppercase tracking-wider" data-i18n="dash_patient_badge">Secure Patient Area</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900" id="dash-greeting">Welcome, Patient Portal</h2>
+            <p class="text-slate-500 text-xs sm:text-sm" data-i18n="dash_patient_sub">Manage your queries, doctor voice feedback, lab records, and upcoming visits.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="navigateTo('ask-doctor')" class="px-4 py-2 bg-cyan-600 text-white rounded-xl text-xs font-semibold hover:bg-cyan-700 flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> <span data-i18n="btn_new_query">New Health Query</span>
+            </button>
+            <button onclick="navigateTo('upload-report')" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-100 flex items-center gap-1.5">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i> <span data-i18n="nav_upload">Upload Report</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stat Metric Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 my-8">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+              <span data-i18n="stat_active_queries">Active Queries</span>
+              <i data-lucide="help-circle" class="w-4 h-4 text-cyan-600"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 mt-2" id="metric-queries">2</div>
+            <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+              <i data-lucide="check" class="w-3 h-3"></i> 1 Replied with voice
+            </span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+              <span data-i18n="stat_stored_reports">Lab Reports</span>
+              <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 mt-2" id="metric-reports">3</div>
+            <span class="text-[10px] text-slate-500 mt-1">Verified & reviewed</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+              <span data-i18n="stat_appointments">Appointments</span>
+              <i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 mt-2" id="metric-apts">2</div>
+            <span class="text-[10px] text-teal-600 font-semibold mt-1">Next: Tomorrow 10 AM</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+              <span data-i18n="stat_sample_pickup">Home Sample</span>
+              <i data-lucide="truck" class="w-4 h-4 text-amber-600"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 mt-2" id="metric-collections">1</div>
+            <span class="text-[10px] text-amber-600 font-semibold mt-1">Phlebotomist Assigned</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Split Columns -->
+        <div class="grid lg:grid-cols-12 gap-8">
+          <!-- Left: Queries and Audio replies -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i data-lucide="message-square" class="w-4 h-4 text-cyan-600"></i>
+                  <span data-i18n="dash_queries_tab">My Health Queries & Audio Clarifications</span>
+                </h3>
+              </div>
+              <div id="patient-dash-query-list" class="space-y-4">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Appointments & Quick Actions -->
+          <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i>
+                  <span data-i18n="dash_my_apts">My Appointments</span>
+                </h3>
+                <button onclick="navigateTo('appointment')" class="text-xs text-cyan-700 font-bold hover:underline" data-i18n="btn_book_appointment">Book New</button>
+              </div>
+              <div id="patient-dash-apt-list" class="space-y-3">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Health Information Quick Tip -->
+            <div class="bg-gradient-to-br from-cyan-900 to-slate-900 text-white p-6 rounded-3xl shadow-sm">
+              <div class="flex items-center gap-2 text-cyan-300 text-xs font-bold uppercase mb-2">
+                <i data-lucide="lightbulb" class="w-4 h-4"></i>
+                <span data-i18n="tip_title">Pathology Health Tip</span>
+              </div>
+              <h4 class="text-sm font-bold mb-1" data-i18n="tip_heading">12-Hour Fasting for Lipid & Glucose Tests</h4>
+              <p class="text-xs text-slate-300 leading-relaxed" data-i18n="tip_body">Drinking plain water is permitted and encouraged before your blood draw to keep veins plump and hydrated. Avoid tea, milk, or juices during fasting.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: DOCTOR DASHBOARD -->
+    <section id="view-doctor-dash" class="page-view hidden py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 mb-8 shadow-xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-400">
+                <i data-lucide="stethoscope" class="w-7 h-7"></i>
+              </div>
+              <div>
+                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-300 text-xs font-medium border border-teal-500/20">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span>Licensed Medical Practitioner Desk</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-bold mt-1">Dr. Sanjay Kumar, MD (Pathology)</h2>
+                <p class="text-xs text-slate-400">Reg No: KMC-49210 • MICRO PATH Chief Consulting Pathologist</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="switchRole('patient')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold border border-slate-700">
+                Exit Doctor View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctor Workflow Section -->
+        <div class="grid lg:grid-cols-12 gap-8">
+          
+          <!-- Queries Triage Desk (Left 7 Cols) -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div>
+                  <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="inbox" class="w-5 h-5 text-cyan-600"></i>
+                    Patient Clinical Queries & Voice Submissions
+                  </h3>
+                  <p class="text-xs text-slate-500">Listen to patient recordings and reply using voice or text</p>
+                </div>
+                <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-bold" id="doc-pending-count">1 Pending</span>
+              </div>
+
+              <div id="doctor-queries-queue" class="mt-6 space-y-5">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Doctor Right Column: OPD Appointments & Uploaded Patient Reports -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- Appointment Requests -->
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <i data-lucide="calendar-check" class="w-4 h-4 text-teal-600"></i>
+                  OPD & Consultation Schedule
+                </h3>
+                <span class="text-xs text-slate-400">Today's List</span>
+              </div>
+              <div id="doctor-apt-queue" class="mt-4 space-y-3">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Uploaded Lab Reports For Pathologist Signature -->
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <i data-lucide="file-check-2" class="w-4 h-4 text-indigo-600"></i>
+                  Patient Uploaded Reports for Review
+                </h3>
+                <span class="text-xs text-indigo-600 font-semibold">Authorized Access</span>
+              </div>
+              <div id="doctor-reports-queue" class="mt-4 space-y-3">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN DASHBOARD -->
+    <section id="view-admin-dash" class="page-view hidden py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-xs font-bold uppercase">
+              <i data-lucide="shield" class="w-3.5 h-3.5"></i> Admin Control Center
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">MICRO PATH Operations Administration</h2>
+            <p class="text-slate-500 text-xs sm:text-sm">Manage test pricings, home phlebotomy assignments, clinic configuration & doctors.</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openAddTestModal()" class="px-3.5 py-2 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Pathology Test
+            </button>
+            <button onclick="switchRole('patient')" class="px-3.5 py-2 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
+              Exit Admin
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Overview Metrics -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500">Total Registered Tests</span>
+            <div class="text-2xl font-black text-slate-900 mt-1" id="admin-count-tests">12</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500">Home Collections</span>
+            <div class="text-2xl font-black text-amber-600 mt-1" id="admin-count-collections">3</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500">Patient Queries</span>
+            <div class="text-2xl font-black text-cyan-600 mt-1" id="admin-count-queries">4</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500">Laboratory OPD Appointments</span>
+            <div class="text-2xl font-black text-teal-600 mt-1" id="admin-count-apts">5</div>
+          </div>
+        </div>
+
+        <!-- Admin Configurable Sections -->
+        <div class="space-y-8 mt-8">
+          
+          <!-- Test Price & Catalog Manager -->
+          <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                <i data-lucide="tag" class="w-4 h-4 text-cyan-600"></i>
+                Pathology Test Price & Preparation Catalog Manager
+              </h3>
+              <span class="text-xs text-slate-400">Live price edits take effect immediately</span>
+            </div>
+            
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200">
+                    <th class="py-3 px-4">Test Code / Name</th>
+                    <th class="py-3 px-4">Sample Type</th>
+                    <th class="py-3 px-4">Preparation / Fasting</th>
+                    <th class="py-3 px-4">Price (₹)</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-tests-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Contact Information & Working Hours Customizer -->
+          <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-900 text-base mb-2 flex items-center gap-2">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-700"></i>
+              Configurable Clinic & Contact Settings
+            </h3>
+            <p class="text-xs text-slate-500 mb-6">Administrators can update contact numbers, WhatsApp hotline, address, and laboratory working hours here.</p>
+
+            <form id="admin-settings-form" onsubmit="handleAdminSettingsSave(event)" class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Clinic Phone Helpline</label>
+                <input type="text" id="cfg-phone" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Support Number</label>
+                <input type="text" id="cfg-whatsapp" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Official Lab Email</label>
+                <input type="email" id="cfg-email" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Physical Address</label>
+                <input type="text" id="cfg-address" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Operating Hours</label>
+                <input type="text" id="cfg-hours" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW: CONTACT US -->
+    <section id="view-contact" class="page-view hidden py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-2">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+            <span data-i18n="contact_pill">Visit or Reach Out</span>
+          </div>
+          <h2 class="text-3xl font-extrabold text-slate-900" data-i18n="contact_heading">MICRO PATH Laboratory Center</h2>
+          <p class="text-slate-500 text-sm mt-1" data-i18n="contact_sub">Have queries about fasting protocols, report dispatch, or sample pickup? Contact our team.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+          
+          <!-- Contact Details Cards -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+                <i data-lucide="phone-call" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="contact_phone_title">Helpline & Blood Collection</h4>
+                <p class="text-base font-extrabold text-slate-900 mt-0.5" id="disp-phone">+91 76/3406/8199</p>
+                <p class="text-xs text-slate-500 mt-1">Available 24/7 for urgent critical sample dispatch</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <i data-lucide="message-circle" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="contact_whatsapp_title">WhatsApp Report Bot</h4>
+                <p class="text-base font-extrabold text-slate-900 mt-0.5" id="disp-whatsapp">+91 76/3406/8199,+91 91/9976/8799</p>
+                <p class="text-xs text-slate-500 mt-1">Type "HI" to download completed PDF reports</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="mail" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Clinical Email Desk</h4>
+                <p class="text-base font-extrabold text-slate-900 mt-0.5" id="disp-email">skumar82432@gmail.com</p>
+                <p class="text-xs text-slate-500 mt-1">For corporate wellness & physician tie-ups</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <i data-lucide="clock" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="contact_hours_title">Operating Hours</h4>
+                <p class="text-sm font-bold text-slate-900 mt-0.5" id="disp-hours">Mon - Sat: 06:30 AM - 09:30 PM | Sun: 07:00 AM - 02:00 PM</p>
+                <p class="text-xs text-slate-500 mt-1">Phlebotomy begins 6:30 AM every morning</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Message Form & Map Container -->
+          <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8">
+            <h3 class="text-lg font-bold text-slate-900 mb-2" data-i18n="contact_msg_title">Send a Quick Note to Micro Path Desk</h3>
+            <p class="text-xs text-slate-500 mb-6" data-i18n="contact_msg_sub">Inquiries are addressed within 30 minutes during laboratory operational hours.</p>
+
+            <form onsubmit="handleContactMessage(event)" class="space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Your Name</label>
+                  <input type="text" required placeholder="Name" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Phone Number</label>
+                  <input type="tel" required placeholder="Phone" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="contact_subject">Subject / Inquiry</label>
+                <select class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+                  <option>Home Collection Query</option>
+                  <option>Report Status / Delay Clarification</option>
+                  <option>Corporate Preventive Health Camp</option>
+                  <option>Doctor Consultation Feedback</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="contact_message">Message</label>
+                <textarea rows="3" required placeholder="Type your message here..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none"></textarea>
+              </div>
+
+              <div class="pt-2 flex justify-between items-center">
+                <span class="text-xs text-slate-500" data-i18n="contact_privacy">Your details remain strictly protected.</span>
+                <button type="submit" class="px-6 py-2.5 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl text-xs font-bold shadow transition-all">
+                  <span data-i18n="btn_send_message">Send Message</span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Physical Address / Location Box -->
+            <div class="mt-6 pt-6 border-t border-slate-100 flex items-start gap-3">
+              <i data-lucide="map-pin" class="w-5 h-5 text-cyan-600 shrink-0 mt-0.5"></i>
+              <div>
+                <span class="text-xs font-bold text-slate-800" data-i18n="lab_hq">Central Clinical Laboratory</span>
+                <p class="text-xs text-slate-600 mt-0.5" id="disp-address">BARTARA BAZAR,FATEHPUR ROAD,GAYA(824232),NEAR-MAA DULARI VASHTRALIYE</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: QUICK BOOK TEST -->
+  <div id="quick-book-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative">
+      <button onclick="closeQuickBookModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm" data-i18n="modal_book_test_title">Book Diagnostic Test</h3>
+          <p class="text-xs text-cyan-700 font-semibold" id="modal-test-name">Test Name</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleQuickBookConfirm(event)" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_name">Patient Full Name</label>
+          <input type="text" id="modal-patient-name" required placeholder="Name" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="form_phone">Mobile Number</label>
+          <input type="tel" id="modal-patient-phone" required placeholder="+91 98765 43210" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="modal_sample_opt">Sample Collection Option</label>
+          <select id="modal-sample-pref" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-cyan-600 focus:outline-none">
+            <option value="Home Collection">Home Sample Collection (Phlebotomist Visit)</option>
+            <option value="Walk-in Lab Visit">Walk-in at MICRO PATH Center</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <span class="text-slate-600" data-i18n="modal_total_fee">Total Standard Fee:</span>
+          <span class="font-extrabold text-cyan-800 text-sm" id="modal-test-price">₹0</span>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-bold rounded-xl text-xs shadow-md transition-all">
+            <span data-i18n="modal_confirm_btn">Confirm Test Booking</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN ADD TEST -->
+  <div id="admin-add-test-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
+      <button onclick="closeAddTestModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <h3 class="font-bold text-slate-900 text-base mb-4 flex items-center gap-2">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-cyan-600"></i> Add Pathology Test to Catalog
+      </h3>
+
+      <form onsubmit="handleAdminAddTest(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Test Name *</label>
+          <input type="text" id="new-test-name" required placeholder="e.g. Vitamin D-3 (25-Hydroxy)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Category *</label>
+            <select id="new-test-cat" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+              <option value="blood">Blood Tests</option>
+              <option value="organ">Organ Profiles</option>
+              <option value="special">Hormone & Urine</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Price (₹) *</label>
+            <input type="number" id="new-test-price" required placeholder="750" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Sample Type *</label>
+            <input type="text" id="new-test-sample" required placeholder="Serum / EDTA Whole Blood" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Turnaround Time *</label>
+            <input type="text" id="new-test-tat" required placeholder="Within 6-12 Hours" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Preparation / Fasting *</label>
+          <input type="text" id="new-test-prep" required placeholder="Fasting not required / 10-12 hrs fasting" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Clinical Utility / Purpose</label>
+          <textarea id="new-test-purpose" rows="2" placeholder="Assess bone health, immune competence and calcium metabolism" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddTestModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-cyan-700 text-white rounded-xl font-bold">Save Test</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs mt-16 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b border-slate-800">
+        
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-cyan-600 flex items-center justify-center text-white">
+              <i data-lucide="microscope" class="w-4 h-4"></i>
+            </div>
+            <span class="text-xl font-bold text-white tracking-tight">MICRO <span class="text-cyan-400">PATH</span></span>
+          </div>
+          <p class="text-slate-400 leading-relaxed max-w-sm" data-i18n="footer_about">
+            High precision clinical diagnostics, blood analysis, and bilingual physician communication for patients across India. NABL standard quality procedures.
+          </p>
+          <div class="flex items-center gap-3 text-slate-400">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-[11px] text-teal-400 border border-slate-700">
+              <i data-lucide="check-circle" class="w-3 h-3"></i> NABL Certified Partner
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-[11px] text-cyan-400 border border-slate-700">
+              <i data-lucide="shield" class="w-3 h-3"></i> 256-bit Encrypted
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-[11px]" data-i18n="footer_links">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><button onclick="navigateTo('home')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_home">Home</button></li>
+            <li><button onclick="navigateTo('tests')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_tests">Pathology Tests</button></li>
+            <li><button onclick="navigateTo('ask-doctor')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_ask">Ask a Doctor</button></li>
+            <li><button onclick="navigateTo('appointment')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_appointment">Book Appointment</button></li>
+            <li><button onclick="navigateTo('home-collection')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_collection">Home Collection</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-[11px]" data-i18n="footer_portals">Portals & Views</h4>
+          <ul class="space-y-2">
+            <li><button onclick="switchRole('patient')" class="hover:text-cyan-400 transition-colors">Patient Portal</button></li>
+            <li><button onclick="switchRole('doctor')" class="hover:text-cyan-400 transition-colors">Doctor Dashboard</button></li>
+            <li><button onclick="switchRole('admin')" class="hover:text-cyan-400 transition-colors">Admin Control Desk</button></li>
+            <li><button onclick="navigateTo('upload-report')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_upload">Upload Report</button></li>
+            <li><button onclick="navigateTo('contact')" class="hover:text-cyan-400 transition-colors" data-i18n="nav_contact">Contact Us</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-[11px]" data-i18n="footer_lang_sel">Language / भाषा</h4>
+          <div class="flex items-center gap-2 mb-4">
+            <button onclick="setLanguage('en')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold">English</button>
+            <button onclick="setLanguage('hi')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold">हिंदी</button>
+          </div>
+          <p class="text-[11px] text-slate-500">Switch language anytime. Data entered in forms is retained safely.</p>
+        </div>
+
+      </div>
+
+      <!-- Legal & Medical Safety Disclaimer -->
+      <div class="pt-8 space-y-3">
+        <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+          <strong class="text-slate-300 block mb-1" data-i18n="medical_disclaimer_title">Statutory Medical & AI Disclaimer:</strong>
+          <span data-i18n="medical_disclaimer_body">
+            MICRO PATH is an accredited diagnostic investigation facility and medical guidance platform. Information provided online, through speech-to-text or educational articles, is strictly intended for general clinical guidance and does NOT constitute definitive medical diagnosis or personalized treatment plan. Test findings must be correlated clinically with your treating physician. In case of acute medical emergencies, chest pain, stroke symptoms, or severe shortness of breath, immediately contact emergency services (112 / 108 / 911).
+          </span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+          <div>© 2026 MICRO PATH Diagnostics Ltd. All rights reserved.</div>
+          <div class="flex items-center gap-4">
+            <a href="#privacy" onclick="showToast('Privacy Policy: Medical records encrypted under ISO/IEC 27001')" class="hover:text-slate-400">Privacy Policy</a>
+            <span>•</span>
+            <a href="#terms" onclick="showToast('Terms of Service: Diagnostic guidelines apply')" class="hover:text-slate-400">Terms & Conditions</a>
+            <span>•</span>
+            <a href="#disclaimer" onclick="showToast('Disclaimer: Always consult qualified doctor')" class="hover:text-slate-400">Clinical Disclaimer</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+<script>
+  /* ==========================================================================
+     1. BILINGUAL DICTIONARIES & LOCALIZATION DATA
+     ========================================================================== */
+  let currentLang = 'en';
+
+  const i18nData = {
+    en: {
+      tagline: "Pathology Lab & Healthcare",
+      emergency_banner: "<strong>Medical Emergency?</strong> Do not wait for online reply. Contact local ambulance (7634068199) or visit nearest ER immediately.",
+      nav_home: "Home",
+      nav_tests: "Pathology Tests",
+      nav_ask: "Ask a Doctor",
+      nav_appointment: "Book Appointment",
+      nav_collection: "Home Collection",
+      nav_upload: "Upload Report",
+      nav_contact: "Contact Us",
+      portal_switch: "Switch Portal Demo",
+      notifications_title: "Notifications & Updates",
+      notif_sync: "Automated SMS & Email Sync Active",
+      clear_all: "Clear All",
+      hero_pill: "NABL Accredited Standard Lab Partner • ISO 15189 Ready",
+      hero_subtitle: "Reliable Laboratory Services & Doctor Support",
+      hero_desc: "High-precision blood testing, pathology investigations, and verified clinical guidance. Speak or write your queries in Hindi and English with ease.",
+      search_btn: "Search",
+      btn_book_test: "Book a Test",
+      btn_ask_doctor: "Ask a Doctor",
+      btn_book_appointment: "Book Appointment",
+      btn_book_now: "Book Test Now",
+      stat_tests: "Diagnostic Tests",
+      stat_collection: "Home Collection Slot",
+      stat_voice: "Voice & Text Doctor",
+      hero_card_title: "Full Body Health Checkup",
+      hero_card_sub: "Includes 64 vital pathology indicators",
+      disclaimer_mini: "Reports provide diagnostic measurements for clinical correlation by doctors. Test results alone do not constitute medical prescription.",
+      services_heading: "Complete Pathology & Diagnostic Ecosystem",
+      services_sub: "Seamless care from phlebotomy at your door to qualified physician audio guidance.",
+      srv_blood: "Blood Tests",
+      srv_blood_desc: "CBC, Blood Sugar, HbA1c, Lipid, Thyroid, Iron, and Vitamin profiles with automated reporting.",
+      srv_path: "Pathology Tests",
+      srv_path_desc: "Microbiology culture, Serology, Stool & Urine routine, Hormone panels, and Biochemistry.",
+      srv_doc: "Doctor Consultation",
+      srv_doc_desc: "Ask clinical questions in Hindi or English using voice or text. Get physician reviewed guidance.",
+      srv_doc_action: "Ask in Hindi / English",
+      srv_upload: "Report Upload & Review",
+      srv_upload_desc: "Upload past PDF or photo reports. Our pathologists break down parameters into plain language.",
+      srv_upload_action: "Upload Lab Document",
+      srv_home: "Home Sample Collection",
+      srv_home_desc: "Certified phlebotomists arrive with cold-chain transport at your preferred hour.",
+      srv_home_action: "Request At-Home Visit",
+      srv_support: "24/7 Laboratory Helpdesk",
+      srv_support_desc: "Need assistance with fasting rules, critical reporting alerts, or sample pickup status? Call us directly.",
+      srv_support_action: "Contact Lab Desk",
+      srv_explore: "Explore Tests",
+      voice_feat_title: "Voice-Enabled Healthcare Experience",
+      voice_feat_heading: "Speak your symptoms in Hindi or English. Listen to doctor responses.",
+      voice_feat_sub: "Designed especially for seniors, busy parents, and anyone who prefers speaking over typing. Tap the mic, speak naturally, review your words, and hit submit.",
+      voice_try_btn: "Try 'Ask a Doctor' Now",
+      cat_title_tag: "MICRO PATH Diagnostic Menu",
+      test_catalog_heading: "Pathology & Blood Tests",
+      test_catalog_sub: "Explore preparation requirements, clinical utilities, sample specs, and transparent fees.",
+      disclaimer_note: "Clinical Correlation: Test parameters require physician interpretation.",
+      voice_desk_badge: "Bilingual Speech-to-Text Clinical Desk",
+      ask_doctor_title: "Consult Our Medical Officer",
+      ask_doctor_sub: "Type or speak your symptoms in English or Hindi. A certified doctor reviews your submission.",
+      warning_label: "Important Medical Notice:",
+      warning_desc: " Online queries are for general triage, symptom clarification, and test preparation guidance. It does NOT substitute emergency rooms or face-to-face diagnosis.",
+      voice_input_lang: "Voice Recognition Language",
+      form_name: "Patient Name *",
+      form_phone: "Mobile Number *",
+      query_label: "Describe your health query or symptoms *",
+      editable_note: "Editable transcript after voice input",
+      mic_speak_btn: "Speak",
+      quick_examples: "Quick Examples (Click to insert):",
+      consent_text: "I consent to sharing this info for doctor triage (Confidential).",
+      btn_submit_query: "Submit to Doctor",
+      recent_queries_title: "Your Queries & Doctor Voice Replies",
+      tap_listen_hint: "Tap 'Listen' to hear voice synthesis",
+      apt_pill: "Clinical OPD & Pathologist Consultation",
+      book_apt_title: "Request an In-Person or Tele Appointment",
+      book_apt_sub: "Confirm slots with senior biochemists, pathologists, and consultant physicians.",
+      apt_age: "Age & Gender *",
+      apt_doc_select: "Select Doctor / Specialist *",
+      apt_date: "Preferred Date *",
+      apt_time: "Preferred Time Slot *",
+      apt_lang_pref: "Language Preference *",
+      apt_mode: "Consultation Mode *",
+      apt_reason: "Reason for Visit / Symptoms *",
+      apt_instant_sms: "Instant SMS confirmation sent on submission",
+      apt_status_title: "Active Appointment Bookings",
+      apt_status_sub: "Track status updates from Requested to Confirmed",
+      home_pill: "Doorstep Phlebotomy Service",
+      home_heading: "Home Sample Collection",
+      home_sub: "Hygienic vacuum-sealed collection tubes, temperature-monitored carrier, and verified phlebotomists.",
+      col_address: "Full Door Address (House / Street / Landmark / Pincode) *",
+      col_slot: "Morning Fasting Slot *",
+      col_test_req: "Test Required *",
+      col_safety_seal: "Our phlebotomists follow WHO sterile draw guidelines. Unopened needle packs opened right in front of you.",
+      col_fee_info: "Free collection for packages over ₹699",
+      btn_request_collection: "Request Home Collection",
+      upload_pill: "Encrypted Lab Vault",
+      upload_heading: "Upload Laboratory Reports",
+      upload_sub: "Upload your laboratory report for review by an authorized doctor/lab professional.",
+      drop_title: "Click to upload or drag & drop laboratory report",
+      drop_formats: "Supported formats: PDF, JPG, JPEG, PNG (Max file size: 10MB)",
+      upload_note: "Notes / Specific Concern for Doctor (Optional)",
+      hipaa_privacy: "Strict confidentiality. Encrypted storage.",
+      btn_upload_submit: "Submit Report for Review",
+      reports_vault_title: "Your Uploaded Lab Reports & Reference Tracking",
+      dash_patient_badge: "Secure Patient Area",
+      dash_patient_sub: "Manage your queries, doctor voice feedback, lab records, and upcoming visits.",
+      btn_new_query: "New Health Query",
+      stat_active_queries: "Active Queries",
+      stat_stored_reports: "Lab Reports",
+      stat_appointments: "Appointments",
+      stat_sample_pickup: "Home Sample",
+      dash_queries_tab: "My Health Queries & Audio Clarifications",
+      dash_my_apts: "My Appointments",
+      tip_title: "Pathology Health Tip",
+      tip_heading: "12-Hour Fasting for Lipid & Glucose Tests",
+      tip_body: "Drinking plain water is permitted and encouraged before your blood draw to keep veins plump and hydrated. Avoid tea, milk, or juices during fasting.",
+      contact_pill: "Visit or Reach Out",
+      contact_heading: "MICRO PATH Laboratory Center",
+      contact_sub: "Have queries about fasting protocols, report dispatch, or sample pickup? Contact our team.",
+      contact_phone_title: "Helpline & Blood Collection",
+      contact_whatsapp_title: "WhatsApp Report Bot",
+      contact_hours_title: "Operating Hours",
+      contact_msg_title: "Send a Quick Note to Micro Path Desk",
+      contact_msg_sub: "Inquiries are addressed within 30 minutes during laboratory operational hours.",
+      contact_subject: "Subject / Inquiry",
+      contact_message: "Message",
+      contact_privacy: "Your details remain strictly protected.",
+      btn_send_message: "Send Message",
+      lab_hq: "Central Clinical Laboratory",
+      modal_book_test_title: "Book Diagnostic Test",
+      modal_sample_opt: "Sample Collection Option",
+      modal_total_fee: "Total Standard Fee:",
+      modal_confirm_btn: "Confirm Test Booking",
+      footer_about: "High precision clinical diagnostics, blood analysis, and bilingual physician communication for patients across India. NABL standard quality procedures.",
+      footer_links: "Quick Links",
+      footer_portals: "Portals & Views",
+      footer_lang_sel: "Language / भाषा",
+      medical_disclaimer_title: "Statutory Medical & AI Disclaimer:",
+      medical_disclaimer_body: "MICRO PATH is an accredited diagnostic investigation facility and medical guidance platform. Information provided online, through speech-to-text or educational articles, is strictly intended for general clinical guidance and does NOT constitute definitive medical diagnosis or personalized treatment plan. Test findings must be correlated clinically with your treating physician. In case of acute medical emergencies, chest pain, stroke symptoms, or severe shortness of breath, immediately contact emergency services (+91 76/3406/8199)."
+    },
+
+    hi: {
+      tagline: "पैथोलॉजी लैब और स्वास्थ्य सेवाएँ",
+      emergency_banner: "<strong>आपातकालीन स्थिति?</strong> ऑनलाइन जवाब का इंतज़ार न करें। तुरंत स्थानीय एम्बुलेंस (7634068199) या नजदीकी अस्पताल के इमरजेंसी विभाग से संपर्क करें।",
+      nav_home: "होम",
+      nav_tests: "पैथोलॉजी टेस्ट",
+      nav_ask: "डॉक्टर से पूछें",
+      nav_appointment: "अपॉइंटमेंट बुक करें",
+      nav_collection: "घर से सैंपल कलेक्शन",
+      nav_upload: "रिपोर्ट अपलोड करें",
+      nav_contact: "संपर्क करें",
+      portal_switch: "पोर्टल बदलें (डेमो)",
+      notifications_title: "सूचनाएँ और अपडेट",
+      notif_sync: "स्वचालित एसएमएस और ईमेल सक्रिय",
+      clear_all: "सभी साफ़ करें",
+      hero_pill: "NABL मान्यता प्राप्त लैब पार्टनर • ISO 15189 प्रमाणित प्रक्रियाएँ",
+      hero_subtitle: "विश्वसनीय पैथोलॉजी सेवाएँ और डॉक्टर सहायता",
+      hero_desc: "सटीक ब्लड टेस्ट, पैथोलॉजी जांच, और अनुभवी डॉक्टरों से परामर्श। हिंदी और अंग्रेजी दोनों में बोलकर या लिखकर सवाल पूछें।",
+      search_btn: "खोजें",
+      btn_book_test: "टेस्ट बुक करें",
+      btn_ask_doctor: "डॉक्टर से पूछें",
+      btn_book_appointment: "अपॉइंटमेंट बुक करें",
+      btn_book_now: "अभी टेस्ट बुक करें",
+      stat_tests: "उपलब्ध टेस्ट",
+      stat_collection: "होम सैंपल स्लॉट",
+      stat_voice: "वॉइस और टेक्स्ट डॉक्टर",
+      hero_card_title: "फुल बॉडी हेल्थ चेकअप",
+      hero_card_sub: "64 आवश्यक पैथोलॉजी जांच शामिल",
+      disclaimer_mini: "रिपोर्ट केवल डॉक्टर के नैदानिक मूल्यांकन के लिए माप प्रदान करती है। परीक्षण परिणाम स्वतः चिकित्सा नुस्खा नहीं होते।",
+      services_heading: "संपूर्ण पैथोलॉजी और डायग्नोस्टिक व्यवस्था",
+      services_sub: "घर पर ब्लड सैंपल से लेकर डॉक्टर द्वारा ऑडियो समीक्षा तक सरल सुविधा।",
+      srv_blood: "ब्लड टेस्ट (रक्त जांच)",
+      srv_blood_desc: "सीबीसी, ब्लड शुगर, HbA1c, लिपिड, थायरॉयड, आयरन और विटामिन प्रोफाइल त्वरित रिपोर्टिंग के साथ।",
+      srv_path: "पैथोलॉजी टेस्ट",
+      srv_path_desc: "माइक्रोबायोलॉजी कल्चर, सीरोलॉजी, स्टूल और यूरिन रूटीन, हार्मोन प्रोफाइल और बायोकेमिस्ट्री।",
+      srv_doc: "डॉक्टर परामर्श",
+      srv_doc_desc: "हिंदी या अंग्रेजी में बोलकर या लिखकर सवाल पूछें। योग्य डॉक्टर की समीक्षा प्राप्त करें।",
+      srv_doc_action: "हिंदी / अंग्रेजी में पूछें",
+      srv_upload: "रिपोर्ट अपलोड और समीक्षा",
+      srv_upload_desc: "अपनी पुरानी पीडीएफ या फोटो रिपोर्ट अपलोड करें। हमारे डॉक्टर इसे आसान भाषा में समझाएंगे।",
+      srv_upload_action: "लैब रिपोर्ट अपलोड करें",
+      srv_home: "होम सैंपल कलेक्शन",
+      srv_home_desc: "प्रमाणित फ्लेबोटोमिस्ट सुरक्षित कोल्ड-चेन किट के साथ आपके चुने हुए समय पर घर आते हैं।",
+      srv_home_action: "घर पर सैंपल बुक करें",
+      srv_support: "24/7 लैब हेल्पलाइन",
+      srv_support_desc: "खाली पेट (फास्टिंग) नियमों, रिपोर्ट स्थिति या सैंपल पिकअप में सहायता के लिए तुरंत कॉल करें।",
+      srv_support_action: "लैब डेस्क से बात करें",
+      srv_explore: "टेस्ट सूची देखें",
+      voice_feat_title: "वॉइस-सक्षम स्वास्थ्य अनुभव",
+      voice_feat_heading: "हिंदी या अंग्रेजी में अपनी समस्या बोलें। डॉक्टर का उत्तर ऑडियो में सुनें।",
+      voice_feat_sub: "बुजुर्गों और मरीजों की सुविधा के लिए विशेष रूप से तैयार। माइक दबाएं, सहजता से बोलें, ट्रांसक्रिप्ट जांचें और भेजें।",
+      voice_try_btn: "'डॉक्टर से पूछें' अभी आज़माएं",
+      cat_title_tag: "MICRO PATH डायग्नोस्टिक सूची",
+      test_catalog_heading: "पैथोलॉजी और ब्लड टेस्ट",
+      test_catalog_sub: "फास्टिंग आवश्यकताएं, उपयोगिता, सैंपल प्रकार और पारदर्शी शुल्क देखें।",
+      disclaimer_note: "नैदानिक नियम: परीक्षण रिपोर्ट का विश्लेषण केवल योग्य डॉक्टर द्वारा ही मान्य है।",
+      voice_desk_badge: "द्विभाषी स्पीच-टू-टेक्स्ट क्लिनिकल डेस्क",
+      ask_doctor_title: "हमारे डॉक्टर से परामर्श लें",
+      ask_doctor_sub: "हिंदी या अंग्रेजी में लक्षण लिखें या बोलें। प्रमाणित डॉक्टर समीक्षा कर जवाब देंगे।",
+      warning_label: "महत्वपूर्ण स्वास्थ्य सूचना:",
+      warning_desc: " ऑनलाइन प्रश्न सामान्य मार्गदर्शन और टेस्ट तैयारी के लिए हैं। यह आपातकालीन चिकित्सा या व्यक्तिगत परीक्षण का विकल्प नहीं है।",
+      voice_input_lang: "आवाज़ पहचान भाषा (Voice Recognition)",
+      form_name: "रोगी का नाम *",
+      form_phone: "मोबाइल नंबर *",
+      query_label: "अपनी समस्या या लक्षण बताएं *",
+      editable_note: "आवाज़ से टेक्स्ट बदलने के बाद आप संपादन कर सकते हैं",
+      mic_speak_btn: "बोलें",
+      quick_examples: "त्वरित उदाहरण (क्लिक करके लिखें):",
+      consent_text: "मैं डॉक्टर मार्गदर्शन हेतु यह जानकारी साझा करने की सहमति देता/देती हूँ (गोपनीय)।",
+      btn_submit_query: "डॉक्टर को भेजें",
+      recent_queries_title: "आपके प्रश्न और डॉक्टर के वॉइस उत्तर",
+      tap_listen_hint: "आवाज़ में सुनने के लिए 'सुनें (Listen)' पर टैप करें",
+      apt_pill: "क्लिनिकल ओपीडी और पैथोलॉजिस्ट परामर्श",
+      book_apt_title: "व्यक्तिगत या टेली-अपॉइंटमेंट बुक करें",
+      book_apt_sub: "वरिष्ठ बायोकेमिस्ट, पैथोलॉजिस्ट और सलाहकार चिकित्सकों के साथ समय निर्धारित करें।",
+      apt_age: "आयु और लिंग *",
+      apt_doc_select: "डॉक्टर / विशेषज्ञ चुनें *",
+      apt_date: "पसंदीदा तारीख *",
+      apt_time: "पसंदीदा समय स्लॉट *",
+      apt_lang_pref: "भाषा वरीयता *",
+      apt_mode: "परामर्श का माध्यम *",
+      apt_reason: "मुलाकात का कारण / लक्षण *",
+      apt_instant_sms: "बुक करने पर तत्काल एसएमएस पुष्टि प्राप्त होगी",
+      apt_status_title: "सक्रिय अपॉइंटमेंट स्थिति",
+      apt_status_sub: "अनुरोध से पुष्टि तक वास्तविक समय स्थिति ट्रैक करें",
+      home_pill: "घर पर सैंपल संग्रह सेवा",
+      home_heading: "होम सैंपल कलेक्शन (घर बैठे जांच)",
+      home_sub: "स्वच्छ वैक्यूम ट्यूब, तापमान-नियंत्रित कैरियर और अनुभवी लैब तकनीशियन।",
+      col_address: "पूरा पता (मकान / गली / लैंडमार्क / पिनकोड) *",
+      col_slot: "सुबह फास्टिंग का समय *",
+      col_test_req: "आवश्यक टेस्ट का नाम *",
+      col_safety_seal: "हमारे तकनीशियन डब्ल्यूएचओ नियमों का पालन करते हैं। आपके सामने ही नई सुई खोली जाती है।",
+      col_fee_info: "₹699 से अधिक के पैकेज पर मुफ्त होम कलेक्शन",
+      btn_request_collection: "घर पर सैंपल मंगवाएं",
+      upload_pill: "सुरक्षित लैब वॉल्ट",
+      upload_heading: "लैब रिपोर्ट अपलोड करें",
+      upload_sub: "अधिकृत डॉक्टर या लैब विशेषज्ञ की समीक्षा हेतु अपनी लैब रिपोर्ट अपलोड करें।",
+      drop_title: "रिपोर्ट अपलोड करने के लिए क्लिक करें या यहाँ खींचें",
+      drop_formats: "समर्थित फाइलें: PDF, JPG, JPEG, PNG (अधिकतम: 10MB)",
+      upload_note: "डॉक्टर के लिए विशेष प्रश्न / नोट (वैकल्पिक)",
+      hipaa_privacy: "सख्त गोपनीयता। डेटा सुरक्षित व एन्क्रिप्टेड है।",
+      btn_upload_submit: "समीक्षा के लिए रिपोर्ट जमा करें",
+      reports_vault_title: "आपकी अपलोड की गई रिपोर्ट्स और संदर्भ संख्या",
+      dash_patient_badge: "सुरक्षित रोगी क्षेत्र",
+      dash_patient_sub: "अपने प्रश्न, डॉक्टर के वॉइस रिप्लाई, लैब रिकॉर्ड और अपॉइंटमेंट प्रबंधित करें।",
+      btn_new_query: "नया स्वास्थ्य प्रश्न",
+      stat_active_queries: "सक्रिय प्रश्न",
+      stat_stored_reports: "लैब रिपोर्ट्स",
+      stat_appointments: "अपॉइंटमेंट्स",
+      stat_sample_pickup: "होम कलेक्शन",
+      dash_queries_tab: "मेरे प्रश्न और डॉक्टर के ऑडियो उत्तर",
+      dash_my_apts: "मेरे अपॉइंटमेंट्स",
+      tip_title: "पैथोलॉजी स्वास्थ्य सलाह",
+      tip_heading: "लिपिड और शुगर टेस्ट के लिए 12 घंटे की फास्टिंग",
+      tip_body: "ब्लड टेस्ट से पहले सादा पानी पीना सुरक्षित और लाभकारी है ताकि नसें स्पष्ट रहें। फास्टिंग के दौरान चाय, दूध या जूस न लें।",
+      contact_pill: "संपर्क करें या लैब आएं",
+      contact_heading: "MICRO PATH प्रयोगशाला केंद्र",
+      contact_sub: "फास्टिंग नियमों, रिपोर्ट मिलने के समय या सैंपल पिकअप की जानकारी हेतु संपर्क करें।",
+      contact_phone_title: "हेल्पलाइन और ब्लड कलेक्शन",
+      contact_whatsapp_title: "व्हाट्सएप रिपोर्ट बॉट",
+      contact_hours_title: "कार्य समय",
+      contact_msg_title: "माइक्रो पाथ डेस्क को संदेश भेजें",
+      contact_msg_sub: "कार्य घंटों के दौरान 30 मिनट के भीतर जवाब दिया जाता है।",
+      contact_subject: "विषय / जांच का प्रकार",
+      contact_message: "संदेश",
+      contact_privacy: "आपकी जानकारी पूर्णतः सुरक्षित और निजी रखी जाती है।",
+      btn_send_message: "संदेश भेजें",
+      lab_hq: "सेंट्रल क्लिनिकल प्रयोगशाला",
+      modal_book_test_title: "डायग्नोस्टिक टेस्ट बुक करें",
+      modal_sample_opt: "सैंपल संग्रह विकल्प",
+      modal_total_fee: "कुल मानक शुल्क:",
+      modal_confirm_btn: "टेस्ट बुकिंग की पुष्टि करें",
+      footer_about: "सटीक क्लिनिकल डायग्नोस्टिक्स, रक्त परीक्षण और द्विभाषी डॉक्टर सहायता। उच्च स्तरीय एनएबीएल गुणवत्ता मानक।",
+      footer_links: "त्वरित लिंक",
+      footer_portals: "पोर्टल और दृश्य",
+      footer_lang_sel: "भाषा / Language",
+      medical_disclaimer_title: "वैधानिक चिकित्सा एवं एआई डिस्क्लेमर:",
+      medical_disclaimer_body: "MICRO PATH एक मान्यता प्राप्त जांच प्रयोगशाला और चिकित्सा मार्गदर्शन मंच है। वेबसाइट पर दी गई जानकारी सामान्य स्वास्थ्य मार्गदर्शन हेतु है और यह डॉक्टर के प्रत्यक्ष परीक्षण या व्यक्तिगत नुस्खे का विकल्प नहीं है। गंभीर स्थिति जैसे सीने में दर्द, सांस लेने में अत्यधिक तकलीफ आदि में तुरंत आपातकालीन नंबर (+91 76/3406/8199) पर संपर्क करें।"
+    }
+  };
+
+  /* ==========================================================================
+     2. MOCK DATABASE & STATE MANAGEMENT
+     ========================================================================== */
+  
+  // Tests Catalog
+  let testsCatalog = [
+    {
+      id: "T-101",
+      name: "CBC (Complete Blood Count)",
+      category: "blood",
+      price: 400,
+      sample: "EDTA Whole Blood (2 ml)",
+      prep: "No fasting required",
+      tat: "Same Day (4 Hours)",
+      purpose: "Detects anemia, infections, leukemia, platelet disorders, and overall immune health."
+    },
+    {
+      id: "T-102",
+      name: "Hemoglobin (Hb) Routine",
+      category: "blood",
+      price: 150,
+      sample: "EDTA Whole Blood",
+      prep: "No preparation required",
+      tat: "Within 2 Hours",
+      purpose: "Evaluates red blood cell oxygen-carrying capacity and checks severity of anemia."
+    },
+    {
+      id: "T-103",
+      name: "Fasting & Postprandial Blood Sugar",
+      category: "blood",
+      price: 180,
+      sample: "Fluoride Plasma (Blood)",
+      prep: "8-10 Hours Fasting / 2 Hours Post-meal",
+      tat: "Same Day (3 Hours)",
+      purpose: "Detects and monitors Type 1 and Type 2 Diabetes Mellitus and Impaired Fasting Glucose."
+    },
+    {
+      id: "T-104",
+      name: "HbA1c (Glycated Hemoglobin)",
+      category: "blood",
+      price: 490,
+      sample: "EDTA Whole Blood",
+      prep: "Non-fasting acceptable",
+      tat: "Same Day (4 Hours)",
+      purpose: "Calculates average 3-month blood glucose control; HPLC reference gold standard."
+    },
+    {
+      id: "T-105",
+      name: "Lipid Profile Comprehensive",
+      category: "blood",
+      price: 650,
+      sample: "Clotted Serum (Yellow Gel Tube)",
+      prep: "10-12 Hours Strict Fasting",
+      tat: "Same Day (6 Hours)",
+      purpose: "Measures Total Cholesterol, HDL, LDL, VLDL, and Triglycerides for cardiovascular risk."
+    },
+    {
+      id: "T-106",
+      name: "Liver Function Test (LFT)",
+      category: "organ",
+      price: 750,
+      sample: "Serum (3 ml)",
+      prep: "8 Hours Fasting recommended",
+      tat: "Within 6 Hours",
+      purpose: "Checks SGOT (AST), SGPT (ALT), Bilirubin, Alkaline Phosphatase, Total Protein, and Albumin."
+    },
+    {
+      id: "T-107",
+      name: "Kidney Function Test (KFT / RFT)",
+      category: "organ",
+      price: 720,
+      sample: "Serum (Blood)",
+      prep: "Overnight fasting preferable",
+      tat: "Within 6 Hours",
+      purpose: "Measures Creatinine, Blood Urea Nitrogen (BUN), Uric Acid, and Electrolytes."
+    },
+    {
+      id: "T-108",
+      name: "Thyroid Profile (Total T3, T4, TSH)",
+      category: "organ",
+      price: 550,
+      sample: "Serum (Blood)",
+      prep: "Morning sample before thyroid medicine",
+      tat: "Same Day (6 Hours)",
+      purpose: "Diagnoses Hypothyroidism, Hyperthyroidism, and endocrine gland dysregulation."
+    },
+    {
+      id: "T-109",
+      name: "Vitamin D-3 & Vitamin B12 Duo",
+      category: "blood",
+      price: 1199,
+      sample: "Serum (Blood)",
+      prep: "10 Hours Fasting",
+      tat: "Next Morning (18 Hours)",
+      purpose: "Crucial for bone density, chronic fatigue diagnosis, nerve health, and immune vitality."
+    },
+    {
+      id: "T-110",
+      name: "Urine Routine & Microscopic (CUE)",
+      category: "special",
+      price: 200,
+      sample: "Clean-Catch Midstream Urine (30 ml)",
+      prep: "First morning sample preferred",
+      tat: "Within 3 Hours",
+      purpose: "Screens for Urinary Tract Infections (UTI), proteinuria, micro-hematuria, and kidney stones."
+    },
+    {
+      id: "T-111",
+      name: "Stool Routine & Occult Blood",
+      category: "special",
+      price: 280,
+      sample: "Clean Stool Specimen",
+      prep: "Avoid red meat 48 hrs prior",
+      tat: "Same Day (5 Hours)",
+      purpose: "Investigates parasitic infections, amoebiasis, occult gastrointestinal bleeding."
+    },
+    {
+      id: "T-112",
+      name: "Serology Widal & Dengue Combo (NS1/IgM)",
+      category: "special",
+      price: 850,
+      sample: "Serum (Blood)",
+      prep: "No fasting needed",
+      tat: "Fast-Track (3 Hours)",
+      purpose: "Rapid diagnosis for acute febrile illness, enteric typhoid, and vector-borne dengue virus."
+    }
+  ];
+
+  // Queries Database
+  let patientQueries = [
+    {
+      id: "QRY-841",
+      patientName: "Sunita Verma",
+      phone: "+91 98112 34567",
+      lang: "hi",
+      queryText: "मुझे पिछले दो दिनों से बहुत ज्यादा कमजोरी महसूस हो रही है और चक्कर आ रहे हैं। क्या मुझे सीबीसी या शुगर टेस्ट कराना चाहिए?",
+      status: "Replied",
+      doctorName: "Dr. Arvind Varma",
+      doctorReplyText: "नमस्ते सुनीता जी। अत्यधिक कमजोरी और चक्कर आना एनीमिया या लो ब्लड प्रेशर/शुगर का संकेत हो सकता है। कृपया जल्द से जल्द सीबीसी (Complete Blood Count) और फास्टिंग ब्लड शुगर टेस्ट करवाएं। आपातकालीन स्थिति में तुरंत नजदीकी क्लिनिक जाएं।",
+      doctorAudioAvailable: true,
+      timestamp: "Today, 09:15 AM"
+    },
+    {
+      id: "QRY-842",
+      patientName: "Rahul Kapoor",
+      phone: "+91 98450 99881",
+      lang: "en",
+      queryText: "I am scheduled for a Lipid Profile and HbA1c test tomorrow morning. Can I drink a cup of black coffee before giving sample?",
+      status: "In Review",
+      doctorName: "Dr. Meera Iyer",
+      doctorReplyText: "Hello Rahul. For an accurate Lipid Profile, please strictly avoid coffee, tea, or milk. You may drink plain water to stay hydrated. A 10-12 hour fasting window is mandatory.",
+      doctorAudioAvailable: true,
+      timestamp: "Today, 10:40 AM"
+    }
+  ];
+
+  // Appointments Database
+  let appointmentsList = [
+    {
+      id: "APT-904",
+      name: "Priya Sharma",
+      age: "34, Female",
+      phone: "+91 98765 43210",
+      doctor: "Dr. Arvind Varma (MD Pathology, 14+ yrs)",
+      date: "2026-09-20",
+      time: "11:00 AM - 01:00 PM",
+      mode: "At Pathology Lab (Physical OPD)",
+      reason: "Discussion of elevated liver enzymes and ultrasound correlation",
+      status: "Confirmed"
+    },
+    {
+      id: "APT-905",
+      name: "Amit Patel",
+      age: "52, Male",
+      phone: "+91 97234 11223",
+      doctor: "Dr. Rajesh Nair (Consultant Physician)",
+      date: "2026-09-21",
+      time: "03:00 PM - 05:00 PM",
+      mode: "Tele-Consultation (Phone / Video Call)",
+      reason: "HbA1c test review (Result 8.2%) and medication adjustment advice",
+      status: "Requested"
+    }
+  ];
+
+  // Home Collections Database
+  let homeCollections = [
+    {
+      id: "COL-3301",
+      name: "Deepak Joshi",
+      phone: "+91 99201 55443",
+      address: "B-204, Surya Towers, Andheri East, Mumbai - 400069",
+      date: "2026-09-20",
+      slot: "06:30 AM - 07:30 AM (Strict Fasting)",
+      tests: "Full Body Checkup Package (CBC + LFT + KFT + Lipid)",
+      status: "Phlebotomist Assigned (Ramesh K. - +91 98110 00112)"
+    }
+  ];
+
+  // Uploaded Reports Vault
+  let uploadedReports = [
+    {
+      refId: "MP-REP-7782",
+      fileName: "Thyroid_Ultrasound_Report.pdf",
+      fileType: "PDF",
+      patientName: "Kavita Singhal",
+      phone: "+91 98711 22334",
+      notes: "TSH was 6.8 mIU/L. Please check if medication dosage is required.",
+      doctorStatus: "Doctor Reviewed",
+      doctorNotes: "TSH indicates subclinical hypothyroidism. Advised Free T4 check and in-person endocrinologist consultation.",
+      uploadedOn: "Yesterday, 4:20 PM"
+    },
+    {
+      refId: "MP-REP-7783",
+      fileName: "Blood_Sugar_HbA1c_Scan.jpg",
+      fileType: "JPG",
+      patientName: "Priya Sharma",
+      phone: "+91 98765 43210",
+      notes: "Routine check after 3 months of metformin.",
+      doctorStatus: "Under Pathologist Review",
+      doctorNotes: "Assigned to Dr. Arvind Varma. Review pending.",
+      uploadedOn: "Today, 08:30 AM"
+    }
+  ];
+
+  // System Notifications
+  let notifications = [
+    { id: 1, title: "Appointment Confirmed", desc: "Your consultation with Dr. Arvind Varma is confirmed for tomorrow 11:00 AM.", time: "10 mins ago", unread: true },
+    { id: 2, title: "Doctor Replied with Voice", desc: "Dr. Arvind Varma replied to Sunita Verma's query. Audio explanation is ready.", time: "1 hour ago", unread: true },
+    { id: 3, title: "Report Reference Generated", desc: "Report reference MP-REP-7783 uploaded successfully for verification.", time: "3 hours ago", unread: false }
+  ];
+
+  // Configurable Settings (Editable by Admin)
+  let clinicConfig = {
+    phone: "+91 1800-419-6427",
+    whatsapp: "+91 98200 12345",
+    email: "support@micropath-lab.com",
+    address: "Plot 42, Micro Path MedTower, Healthcare Avenue, Sector 18, Metro Hub",
+    hours: "Mon - Sat: 06:30 AM - 09:30 PM | Sun: 07:00 AM - 02:00 PM"
+  };
+
+  /* ==========================================================================
+     3. BILINGUAL VOICE INTERFACE (SPEECH RECOGNITION & TTS)
+     ========================================================================== */
+  
+  let recognition = null;
+  let isRecording = false;
+
+  // Initialize Speech Recognition
+  function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn("Web Speech Recognition API is not supported in this browser.");
+      return null;
+    }
+    const recog = new SpeechRecognition();
+    recog.continuous = false;
+    recog.interimResults = true;
+
+    recog.onstart = () => {
+      isRecording = true;
+      updateMicUI(true);
+      showToast(currentLang === 'hi' ? "सुन रहा हूँ... बोलिए" : "Listening... Please speak your query", "mic");
+    };
+
+    recog.onresult = (event) => {
+      let interimTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const transcript = event.results[i][0].transcript;
+          const queryBox = document.getElementById('query-text-box');
+          const existingText = queryBox.value.trim();
+          queryBox.value = existingText ? existingText + " " + transcript : transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (interimTranscript) {
+        document.getElementById('recording-status-text').innerText = interimTranscript;
+      }
+    };
+
+    recog.onerror = (event) => {
+      console.error("Speech Recognition Error:", event.error);
+      isRecording = false;
+      updateMicUI(false);
+      if (event.error === 'not-allowed') {
+        showToast("Microphone permission denied. Please allow mic in browser settings.", "alert-circle");
+      } else {
+        showToast("Voice input stopped or timed out.", "info");
+      }
+    };
+
+    recog.onend = () => {
+      isRecording = false;
+      updateMicUI(false);
+      showToast(currentLang === 'hi' ? "आवाज़ टेक्स्ट में परिवर्तित हो गई है। आप इसे संपादित कर सकते हैं।" : "Voice converted to text. You can edit it now.", "check");
+    };
+
+    return recog;
+  }
+
+  function toggleSpeechRecognition() {
+    if (!recognition) {
+      recognition = initSpeechRecognition();
+    }
+
+    if (!recognition) {
+      showToast("Voice recognition is not supported in your browser. Please type your query.", "alert-triangle");
+      return;
+    }
+
+    if (isRecording) {
+      recognition.stop();
+      isRecording = false;
+      updateMicUI(false);
+    } else {
+      // Determine selected language
+      const isHindi = document.getElementById('speech-lang-hi').checked;
+      recognition.lang = isHindi ? 'hi-IN' : 'en-IN';
+      try {
+        recognition.start();
+      } catch (err) {
+        console.warn("Recognition already active", err);
+      }
+    }
+  }
+
+  function updateMicUI(recording) {
+    const micBtn = document.getElementById('mic-btn');
+    const micLabel = document.getElementById('mic-btn-label');
+    const statusPill = document.getElementById('recording-status');
+    const statusText = document.getElementById('recording-status-text');
+
+    if (recording) {
+      micBtn.classList.remove('bg-cyan-600', 'hover:bg-cyan-700');
+      micBtn.classList.add('bg-rose-600', 'hover:bg-rose-700', 'listening-pulse');
+      micLabel.innerText = currentLang === 'hi' ? "सुन रहा हूँ..." : "Stop Mic";
+      statusPill.classList.remove('hidden');
+      statusPill.classList.add('flex');
+      statusText.innerText = currentLang === 'hi' ? "सुन रहा हूँ... बोलिए" : "Listening... Speak clearly";
+    } else {
+      micBtn.classList.add('bg-cyan-600', 'hover:bg-cyan-700');
+      micBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700', 'listening-pulse');
+      micLabel.innerText = currentLang === 'hi' ? "बोलें" : "Speak";
+      statusPill.classList.add('hidden');
+      statusPill.classList.remove('flex');
+    }
+  }
+
+  // Doctor Speech Recognition (Reply in Doctor Dashboard)
+  let docRecog = null;
+  let isDocRecording = false;
+
+  function toggleDoctorVoice(queryId) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast("Voice input not supported in this browser.", "alert-circle");
+      return;
+    }
+
+    const replyBox = document.getElementById(`doc-reply-input-${queryId}`);
+    const micBtn = document.getElementById(`doc-mic-btn-${queryId}`);
+
+    if (isDocRecording) {
+      if (docRecog) docRecog.stop();
+      isDocRecording = false;
+      micBtn.classList.remove('bg-rose-600', 'text-white');
+      micBtn.classList.add('bg-slate-100', 'text-slate-700');
+      return;
+    }
+
+    docRecog = new SpeechRecognition();
+    docRecog.lang = 'en-IN'; // Pathologist dictation
+    docRecog.interimResults = false;
+
+    docRecog.onstart = () => {
+      isDocRecording = true;
+      micBtn.classList.add('bg-rose-600', 'text-white');
+      micBtn.classList.remove('bg-slate-100', 'text-slate-700');
+      showToast("Doctor voice dictation active...", "mic");
+    };
+
+    docRecog.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      replyBox.value = (replyBox.value ? replyBox.value + " " : "") + text;
+    };
+
+    docRecog.onend = () => {
+      isDocRecording = false;
+      micBtn.classList.remove('bg-rose-600', 'text-white');
+      micBtn.classList.add('bg-slate-100', 'text-slate-700');
+      showToast("Voice transcribed successfully.", "check");
+    };
+
+    docRecog.start();
+  }
+
+  // Text-To-Speech (Speech Synthesis) for Doctor's reply
+  function playTextToSpeech(text, lang = 'hi-IN') {
+    if (!('speechSynthesis' in window)) {
+      showToast("Text-to-speech is not supported by your browser.", "alert-triangle");
+      return;
+    }
+
+    window.speechSynthesis.cancel(); // Cancel any ongoing speech
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Select appropriate available voice
+    const voices = window.speechSynthesis.getVoices();
+    let selectedVoice = null;
+
+    if (lang.includes('hi')) {
+      selectedVoice = voices.find(v => v.lang.includes('hi') || v.name.includes('Hindi') || v.lang.includes('IN'));
+      utterance.lang = 'hi-IN';
+      utterance.rate = 0.9; // Slightly slower for clear medical understanding
+    } else {
+      selectedVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en'));
+      utterance.lang = 'en-IN';
+      utterance.rate = 1.0;
+    }
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    utterance.onstart = () => {
+      showToast("Playing doctor's audio explanation...", "volume-2");
+    };
+
+    utterance.onerror = (e) => {
+      console.warn("TTS Error:", e);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /* ==========================================================================
+     4. LANGUAGE SWITCHER & DOM TRANSLATION
+     ========================================================================== */
+  
+  function setLanguage(lang) {
+    currentLang = lang;
+    const enBtn = document.getElementById('lang-en');
+    const hiBtn = document.getElementById('lang-hi');
+
+    if (lang === 'hi') {
+      hiBtn.classList.add('bg-white', 'text-cyan-900', 'shadow-sm');
+      hiBtn.classList.remove('text-slate-600');
+      enBtn.classList.remove('bg-white', 'text-cyan-900', 'shadow-sm');
+      enBtn.classList.add('text-slate-600');
+      // Set speech recognition default radio to Hindi
+      const speechRadioHi = document.getElementById('speech-lang-hi');
+      if (speechRadioHi) speechRadioHi.checked = true;
+    } else {
+      enBtn.classList.add('bg-white', 'text-cyan-900', 'shadow-sm');
+      enBtn.classList.remove('text-slate-600');
+      hiBtn.classList.remove('bg-white', 'text-cyan-900', 'shadow-sm');
+      hiBtn.classList.add('text-slate-600');
+      const speechRadioEn = document.getElementById('speech-lang-en');
+      if (speechRadioEn) speechRadioEn.checked = true;
+    }
+
+    // Translate DOM elements marked with data-i18n
+    const dict = i18nData[lang] || i18nData.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        el.innerHTML = dict[key];
+      }
+    });
+
+    // Update dynamic sections with current language
+    renderTestsCatalog();
+    renderPatientQueries();
+    renderAppointments();
+    renderUploadedReports();
+    lucide.createIcons();
+    showToast(lang === 'hi' ? "भाषा बदलकर हिंदी कर दी गई है" : "Language switched to English", "globe");
+  }
+
+  /* ==========================================================================
+     5. SPA NAVIGATION & ROLE SWITCHING
+     ========================================================================== */
+
+  let currentRole = 'patient'; // 'patient' | 'doctor' | 'admin'
+
+  function navigateTo(pageId) {
+    // Hide all pages
+    document.querySelectorAll('.page-view').forEach(view => {
+      view.classList.add('hidden');
+      view.classList.remove('block');
+    });
+
+    // Determine target view id
+    let targetId = 'view-' + pageId;
+    const targetEl = document.getElementById(targetId);
+    if (targetEl) {
+      targetEl.classList.remove('hidden');
+      targetEl.classList.add('block');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Update active nav button state
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      if (btn.getAttribute('data-page') === pageId) {
+        btn.classList.add('text-cyan-700', 'bg-cyan-50');
+        btn.classList.remove('text-slate-600');
+      } else {
+        btn.classList.remove('text-cyan-700', 'bg-cyan-50');
+        btn.classList.add('text-slate-600');
+      }
+    });
+
+    // Close mobile drawer if open
+    document.getElementById('mobile-menu').classList.add('hidden');
+  }
+
+  function switchRole(role) {
+    currentRole = role;
+    const badge = document.getElementById('current-role-badge');
+    
+    if (role === 'doctor') {
+      badge.innerText = 'Doctor (MD)';
+      badge.className = 'text-teal-400 font-bold';
+      navigateTo('doctor-dash');
+      renderDoctorDashboard();
+      showToast("Switched to Doctor Dashboard view.", "stethoscope");
+    } else if (role === 'admin') {
+      badge.innerText = 'Administrator';
+      badge.className = 'text-indigo-400 font-bold';
+      navigateTo('admin-dash');
+      renderAdminDashboard();
+      showToast("Switched to Laboratory Admin Console.", "shield-check");
+    } else {
+      badge.innerText = 'Patient';
+      badge.className = 'text-cyan-400 font-medium';
+      navigateTo('patient-dash');
+      renderPatientDashboard();
+      showToast("Switched to Patient Portal view.", "user");
+    }
+    lucide.createIcons();
+  }
+
+  function toggleMobileNav() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  }
+
+  function toggleNotificationDrawer() {
+    const drawer = document.getElementById('notif-drawer');
+    drawer.classList.toggle('hidden');
+    renderNotifications();
+  }
+
+  function showToast(msg, iconName = 'check-circle-2') {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+
+    toastMsg.innerText = msg;
+    toastIcon.setAttribute('data-lucide', iconName);
+    lucide.createIcons();
+
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-24', 'opacity-0');
+    }, 4000);
+  }
+
+  /* ==========================================================================
+     6. PATHOLOGY & BLOOD TESTS CATALOG LOGIC
+     ========================================================================== */
+
+  let currentCategory = 'all';
+
+  function filterTestCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+      pill.classList.remove('bg-cyan-600', 'text-white', 'active');
+      pill.classList.add('bg-white', 'text-slate-700', 'border');
+    });
+
+    const activeBtn = event.currentTarget;
+    activeBtn.classList.remove('bg-white', 'text-slate-700', 'border');
+    activeBtn.classList.add('bg-cyan-600', 'text-white', 'active');
+
+    renderTestsCatalog();
+  }
+
+  function filterTestsByKeyword() {
+    renderTestsCatalog();
+  }
+
+  function renderTestsCatalog() {
+    const grid = document.getElementById('tests-grid');
+    if (!grid) return;
+
+    const query = (document.getElementById('test-filter-input')?.value || '').toLowerCase();
+
+    let filtered = testsCatalog.filter(t => {
+      const matchCat = (currentCategory === 'all') || (t.category === currentCategory);
+      const matchQuery = t.name.toLowerCase().includes(query) ||
+                         t.sample.toLowerCase().includes(query) ||
+                         t.purpose.toLowerCase().includes(query) ||
+                         t.prep.toLowerCase().includes(query);
+      return matchCat && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-200">
+          <i data-lucide="search-x" class="w-10 h-10 text-slate-400 mx-auto mb-2"></i>
+          <p class="text-sm font-semibold text-slate-700">No diagnostic tests matched your search.</p>
+          <button onclick="document.getElementById('test-filter-input').value=''; renderTestsCatalog();" class="mt-3 px-4 py-1.5 rounded-lg bg-cyan-100 text-cyan-800 text-xs font-bold">Clear Filters</button>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    grid.innerHTML = filtered.map(test => `
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between hover:shadow-lg hover:border-cyan-500 transition-all group">
+        <div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${
+              test.category === 'blood' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+              test.category === 'organ' ? 'bg-teal-50 text-teal-700 border border-teal-100' :
+              'bg-indigo-50 text-indigo-700 border border-indigo-100'
+            }">
+              ${test.category === 'blood' ? 'Blood Test' : test.category === 'organ' ? 'Organ Profile' : 'Pathology Test'}
+            </span>
+            <span class="text-lg font-black text-slate-900">₹${test.price}</span>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 mt-3 group-hover:text-cyan-700 transition-colors">${test.name}</h3>
+          <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">${test.purpose}</p>
+
+          <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs">
+            <div class="flex items-center gap-2 text-slate-600">
+              <i data-lucide="test-tube" class="w-3.5 h-3.5 text-cyan-600 shrink-0"></i>
+              <span><strong>Sample:</strong> ${test.sample}</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-600">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
+              <span><strong>Prep:</strong> ${test.prep}</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-600">
+              <i data-lucide="file-badge" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
+              <span><strong>Report Time:</strong> ${test.tat}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <button onclick="openQuickBookModal('${test.name}', ${test.price})" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+            <span>${currentLang === 'hi' ? 'टेस्ट बुक करें' : 'Book Test'}</span>
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    lucide.createIcons();
+  }
+
+  // Quick Book Modal
+  let selectedTestForModal = null;
+
+  function openQuickBookModal(name, price) {
+    selectedTestForModal = { name, price };
+    document.getElementById('modal-test-name').innerText = name;
+    document.getElementById('modal-test-price').innerText = `₹${price}`;
+    document.getElementById('quick-book-modal').classList.remove('hidden');
+  }
+
+  function closeQuickBookModal() {
+    document.getElementById('quick-book-modal').classList.add('hidden');
+  }
+
+  function handleQuickBookConfirm(e) {
+    e.preventDefault();
+    const name = document.getElementById('modal-patient-name').value;
+    const phone = document.getElementById('modal-patient-phone').value;
+    const pref = document.getElementById('modal-sample-pref').value;
+
+    const ref = "BK-" + Math.floor(100000 + Math.random() * 900000);
+    closeQuickBookModal();
+
+    // Add to notifications
+    notifications.unshift({
+      id: Date.now(),
+      title: "Test Booked: " + selectedTestForModal.name,
+      desc: `Ref #${ref} for ${name} (${pref}). SMS dispatched to ${phone}.`,
+      time: "Just now",
+      unread: true
+    });
+
+    showToast(`Test booking confirmed! Ref #${ref}. SMS confirmation sent to ${phone}.`, "check-circle");
+    e.target.reset();
+  }
+
+  function quickBookTest(name, price) {
+    openQuickBookModal(name, price);
+  }
+
+  /* ==========================================================================
+     7. ASK A DOCTOR (VOICE & TEXT FLOW)
+     ========================================================================== */
+
+  function insertExampleText(text) {
+    document.getElementById('query-text-box').value = text;
+  }
+
+  function submitPatientQuery() {
+    const name = document.getElementById('query-patient-name').value.trim();
+    const phone = document.getElementById('query-patient-phone').value.trim();
+    const text = document.getElementById('query-text-box').value.trim();
+    const consent = document.getElementById('consent-check').checked;
+
+    if (!name || !phone || !text) {
+      showToast("Please enter patient name, mobile number and query details.", "alert-triangle");
+      return;
+    }
+
+    if (!consent) {
+      showToast("Please check the consent box to proceed.", "alert-triangle");
+      return;
+    }
+
+    const newQueryId = "QRY-" + Math.floor(100 + Math.random() * 900);
+    const newEntry = {
+      id: newQueryId,
+      patientName: name,
+      phone: phone,
+      lang: document.getElementById('speech-lang-hi').checked ? 'hi' : 'en',
+      queryText: text,
+      status: "In Review",
+      doctorName: "Pro.Dr.S.kumar",
+      doctorReplyText: "Thank you for reaching out. A pathologist has been notified to review your reported symptoms.",
+      doctorAudioAvailable: false,
+      timestamp: "Just now"
+    };
+
+    patientQueries.unshift(newEntry);
+
+    // Add notification
+    notifications.unshift({
+      id: Date.now(),
+      title: "Doctor Query Submitted (" + newQueryId + ")",
+      desc: "Your inquiry is queued for clinical review by our pathologist.",
+      time: "Just now",
+      unread: true
+    });
+
+    // Reset fields
+    document.getElementById('query-text-box').value = "";
+    showToast(currentLang === 'hi' ? "आपका प्रश्न डॉक्टर को सफलतापूर्वक भेज दिया गया है!" : "Query submitted to doctor successfully!", "send");
+
+    renderPatientQueries();
+    renderDoctorDashboard();
+    renderPatientDashboard();
+  }
+
+  function renderPatientQueries() {
+    const container = document.getElementById('patient-queries-thread');
+    if (!container) return;
+
+    if (patientQueries.length === 0) {
+      container.innerHTML = `<p class="text-xs text-slate-400">No active queries found.</p>`;
+      return;
+    }
+
+    container.innerHTML = patientQueries.map(q => `
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-800">${q.patientName}</span>
+            <span class="text-slate-400">• Ref #${q.id}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${
+            q.status === 'Replied' ? 'bg-emerald-100 text-emerald-800' :
+            q.status === 'In Review' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'
+          }">${q.status}</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">
+          "${q.queryText}"
+        </p>
+
+        <!-- Doctor's Response -->
+        <div class="pt-3 border-t border-slate-100 bg-cyan-50/40 p-3.5 rounded-xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-cyan-900">
+              <i data-lucide="stethoscope" class="w-3.5 h-3.5 text-cyan-700"></i>
+              <span>${q.doctorName}</span>
+            </div>
+            ${q.doctorReplyText ? `
+              <button onclick="playTextToSpeech('${q.doctorReplyText.replace(/'/g, "\\'")}', '${q.lang}')" class="px-2.5 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                <span>${currentLang === 'hi' ? 'सुनें (Listen)' : 'Listen (Audio)'}</span>
+              </button>
+            ` : ''}
+          </div>
+          <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+            ${q.doctorReplyText || 'Physician review in progress...'}
+          </p>
+        </div>
+      </div>
+    `).join('');
+
+    lucide.createIcons();
+  }
+
+  /* ==========================================================================
+     8. APPOINTMENTS & HOME COLLECTION HANDLERS
+     ========================================================================== */
+
+  function handleAppointmentSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('apt-name').value;
+    const age = document.getElementById('apt-age').value;
+    const gender = document.getElementById('apt-gender').value;
+    const phone = document.getElementById('apt-phone').value;
+    const doctor = document.getElementById('apt-doctor').value;
+    const date = document.getElementById('apt-date').value;
+    const time = document.getElementById('apt-time').value;
+    const mode = document.getElementById('apt-mode').value;
+    const reason = document.getElementById('apt-reason').value;
+
+    const aptId = "APT-" + Math.floor(100 + Math.random() * 900);
+    const newApt = {
+      id: aptId,
+      name,
+      age: `${age}, ${gender}`,
+      phone,
+      doctor,
+      date,
+      time,
+      mode,
+      reason,
+      status: "Requested"
+    };
+
+    appointmentsList.unshift(newApt);
+
+    notifications.unshift({
+      id: Date.now(),
+      title: "Appointment Requested (" + aptId + ")",
+      desc: `Slot on ${date} (${time}) with ${doctor} submitted for confirmation.`,
+      time: "Just now",
+      unread: true
+    });
+
+    showToast("Appointment request submitted successfully! Ref: " + aptId, "calendar");
+    e.target.reset();
+    renderAppointments();
+    renderPatientDashboard();
+    renderDoctorDashboard();
+  }
+
+  function renderAppointments() {
+    const list = document.getElementById('appointment-status-list');
+    const pill = document.getElementById('apt-counter-pill');
+    if (!list) return;
+
+    if (pill) pill.innerText = `${appointmentsList.length} Scheduled`;
+
+    list.innerHTML = appointmentsList.map(apt => `
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div>
+          <div class="font-bold text-slate-800">${apt.doctor}</div>
+          <div class="text-slate-500 text-[11px] mt-0.5">Patient: ${apt.name} (${apt.age}) • ${apt.date} • ${apt.time}</div>
+          <div class="text-cyan-700 font-medium text-[11px] mt-0.5">${apt.mode}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full font-bold text-[11px] ${
+            apt.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-800' :
+            apt.status === 'Completed' ? 'bg-indigo-100 text-indigo-800' :
+            apt.status === 'Cancelled' ? 'bg-rose-100 text-rose-800' :
+            'bg-amber-100 text-amber-800'
+          }">${apt.status}</span>
+        </div>
+      </div>
+    `).join('');
+
+    lucide.createIcons();
+  }
+
+  function handleHomeCollectionSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('col-name').value;
+    const phone = document.getElementById('col-phone').value;
+    const address = document.getElementById('col-address').value;
+    const date = document.getElementById('col-date').value;
+    const slot = document.getElementById('col-slot').value;
+    const tests = document.getElementById('col-tests').value;
+
+    const colId = "COL-" + Math.floor(1000 + Math.random() * 9000);
+    homeCollections.unshift({
+      id: colId,
+      name,
+      phone,
+      address,
+      date,
+      slot,
+      tests,
+      status: "Assigned (Phlebotomist dispatched on date)"
+    });
+
+    notifications.unshift({
+      id: Date.now(),
+      title: "Home Sample Request Confirmed",
+      desc: `Ref #${colId} for ${name} at ${slot} scheduled.`,
+      time: "Just now",
+      unread: true
+    });
+
+    showToast(`Home collection requested! Ref: ${colId}. Our phlebotomist will call ${phone}.`, "truck");
+    e.target.reset();
+  }
+
+  /* ==========================================================================
+     9. LAB REPORT UPLOAD & REVIEWS
+     ========================================================================== */
+
+  let currentSelectedFile = null;
+
+  function handleFileSelected(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      // File validation: Size <= 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        showToast("File exceeds 10MB limit. Please upload a smaller file.", "alert-triangle");
+        return;
+      }
+      currentSelectedFile = file;
+      document.getElementById('file-preview-pill').classList.remove('hidden');
+      document.getElementById('file-name-label').innerText = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+      showToast(`Selected file: ${file.name}`, "file");
+    }
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.add('border-cyan-500', 'bg-cyan-50/40');
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.remove('border-cyan-500', 'bg-cyan-50/40');
+  }
+
+  function handleFileDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.remove('border-cyan-500', 'bg-cyan-50/40');
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
+        showToast("Invalid file format. Please upload PDF, JPG or PNG.", "alert-triangle");
+        return;
+      }
+      currentSelectedFile = file;
+      document.getElementById('file-preview-pill').classList.remove('hidden');
+      document.getElementById('file-name-label').innerText = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+      showToast(`Attached report: ${file.name}`, "check");
+    }
+  }
+
+  function submitReportUpload() {
+    const name = document.getElementById('upload-patient-name').value.trim();
+    const phone = document.getElementById('upload-patient-phone').value.trim();
+    const note = document.getElementById('upload-patient-note').value.trim();
+
+    if (!name || !phone) {
+      showToast("Please provide patient name and contact phone number.", "alert-triangle");
+      return;
+    }
+
+    if (!currentSelectedFile) {
+      showToast("Please select or drop a laboratory report file (PDF/JPG/PNG).", "alert-circle");
+      return;
+    }
+
+    const refNumber = "MP-REP-" + Math.floor(1000 + Math.random() * 9000);
+    const newReport = {
+      refId: refNumber,
+      fileName: currentSelectedFile.name,
+      fileType: currentSelectedFile.name.split('.').pop().toUpperCase(),
+      patientName: name,
+      phone: phone,
+      notes: note || "Uploaded for second clinical opinion.",
+      doctorStatus: "Under Pathologist Review",
+      doctorNotes: "Received and encrypted. Assigned to Dr. Arvind Varma.",
+      uploadedOn: "Just now"
+    };
+
+    uploadedReports.unshift(newReport);
+
+    notifications.unshift({
+      id: Date.now(),
+      title: "Report Uploaded (" + refNumber + ")",
+      desc: `Your laboratory report '${currentSelectedFile.name}' was securely uploaded.`,
+      time: "Just now",
+      unread: true
+    });
+
+    // Reset upload UI
+    currentSelectedFile = null;
+    document.getElementById('file-preview-pill').classList.add('hidden');
+    document.getElementById('upload-patient-name').value = "";
+    document.getElementById('upload-patient-phone').value = "";
+    document.getElementById('upload-patient-note').value = "";
+
+    showToast(`Report uploaded! Assigned Reference ID: ${refNumber}`, "shield-check");
+
+    renderUploadedReports();
+    renderDoctorDashboard();
+    renderPatientDashboard();
+  }
+
+  function renderUploadedReports() {
+    const container = document.getElementById('patient-uploaded-reports');
+    if (!container) return;
+
+    container.innerHTML = uploadedReports.map(rep => `
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl ${
+            rep.fileType === 'PDF' ? 'bg-rose-50 text-rose-600' : 'bg-cyan-50 text-cyan-600'
+          } flex items-center justify-center shrink-0">
+            <i data-lucide="${rep.fileType === 'PDF' ? 'file-text' : 'image'}" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800 text-xs sm:text-sm">${rep.fileName}</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">${rep.refId}</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Patient: ${rep.patientName} • Uploaded ${rep.uploadedOn}</p>
+            <p class="text-xs text-slate-700 mt-1"><strong>Doctor Review:</strong> ${rep.doctorNotes}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 self-end md:self-center">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${
+            rep.doctorStatus.includes('Reviewed') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+          }">${rep.doctorStatus}</span>
+          <button onclick="downloadMockReport('${rep.refId}')" class="p-2 text-slate-500 hover:text-cyan-700 rounded-lg hover:bg-slate-100" title="View Document">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    lucide.createIcons();
+  }
+
+  function downloadMockReport(refId) {
+    showToast(`Accessing authorized encrypted document #${refId}...`, "lock");
+  }
+
+  /* ==========================================================================
+     10. DOCTOR DASHBOARD INTERACTIVE ACTIONS
+     ========================================================================== */
+
+  function renderDoctorDashboard() {
+    const queue = document.getElementById('doctor-queries-queue');
+    const aptQueue = document.getElementById('doctor-apt-queue');
+    const repQueue = document.getElementById('doctor-reports-queue');
+    const pendingBadge = document.getElementById('doc-pending-count');
+
+    // Filter pending / in review queries
+    const pendingQueries = patientQueries.filter(q => q.status !== 'Closed');
+    if (pendingBadge) pendingBadge.innerText = `${pendingQueries.length} Pending`;
+
+    if (queue) {
+      queue.innerHTML = patientQueries.map(q => `
+        <div class="border border-slate-200 rounded-2xl p-5 space-y-3 bg-white">
+          <div class="flex items-start justify-between gap-3 text-xs">
+            <div>
+              <div class="font-bold text-slate-900 text-sm">${q.patientName}</div>
+              <span class="text-slate-500">${q.phone} • Ref #${q.id} • ${q.timestamp}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <select onchange="updateQueryStatus('${q.id}', this.value)" class="text-xs font-bold border border-slate-200 rounded-lg px-2 py-1 bg-slate-50">
+                <option value="New" ${q.status === 'New' ? 'selected' : ''}>New</option>
+                <option value="In Review" ${q.status === 'In Review' ? 'selected' : ''}>In Review</option>
+                <option value="Replied" ${q.status === 'Replied' ? 'selected' : ''}>Replied</option>
+                <option value="Closed" ${q.status === 'Closed' ? 'selected' : ''}>Closed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Patient Text Inquiry -->
+          <div class="bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 leading-relaxed border border-slate-100 flex items-start gap-2">
+            <i data-lucide="message-square" class="w-4 h-4 text-cyan-600 shrink-0 mt-0.5"></i>
+            <div>
+              <strong>Patient Query:</strong> "${q.queryText}"
+              <button onclick="playTextToSpeech('${q.queryText.replace(/'/g, "\\'")}', '${q.lang}')" class="ml-2 text-cyan-700 font-bold hover:underline inline-flex items-center gap-1">
+                <i data-lucide="volume-2" class="w-3 h-3"></i> Listen to query
+              </button>
+            </div>
+          </div>
+
+          <!-- Doctor Reply Composer -->
+          <div class="space-y-2 pt-2">
+            <label class="text-xs font-bold text-slate-700">Doctor Clinical Reply (Text & Audio Sync)</label>
+            <div class="relative">
+              <textarea id="doc-reply-input-${q.id}" rows="2" placeholder="Dictate voice or type your clinical instructions here..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none">${q.doctorReplyText || ''}</textarea>
+              
+              <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                <button type="button" id="doc-mic-btn-${q.id}" onclick="toggleDoctorVoice('${q.id}')" class="p-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors" title="Dictate Voice">
+                  <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-slate-400">Audio will be generated for patient</span>
+              <button onclick="saveDoctorReply('${q.id}')" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                Save & Dispatch Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    if (aptQueue) {
+      aptQueue.innerHTML = appointmentsList.map(apt => `
+        <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs">
+          <div>
+            <div class="font-bold text-slate-800">${apt.name} (${apt.age})</div>
+            <div class="text-[11px] text-slate-500">${apt.time} • ${apt.date}</div>
+            <div class="text-[10px] text-teal-700">${apt.reason}</div>
+          </div>
+          <select onchange="updateAppointmentStatus('${apt.id}', this.value)" class="text-[11px] font-bold border border-slate-200 rounded px-1.5 py-0.5 bg-white">
+            <option value="Requested" ${apt.status === 'Requested' ? 'selected' : ''}>Requested</option>
+            <option value="Confirmed" ${apt.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+            <option value="Completed" ${apt.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            <option value="Cancelled" ${apt.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+          </select>
+        </div>
+      `).join('');
+    }
+
+    if (repQueue) {
+      repQueue.innerHTML = uploadedReports.map(rep => `
+        <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800">${rep.patientName}</span>
+            <span class="font-mono text-[10px] bg-white px-1.5 py-0.5 rounded border">${rep.refId}</span>
+          </div>
+          <p class="text-[11px] text-slate-500">${rep.fileName} • ${rep.notes}</p>
+          <div class="flex justify-end pt-1">
+            <button onclick="markReportReviewed('${rep.refId}')" class="text-xs text-indigo-600 font-bold hover:underline">
+              ${rep.doctorStatus.includes('Reviewed') ? '✓ Signed' : 'Sign & Complete Review'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    lucide.createIcons();
+  }
+
+  function updateQueryStatus(id, newStatus) {
+    const q = patientQueries.find(item => item.id === id);
+    if (q) {
+      q.status = newStatus;
+      showToast(`Query #${id} status changed to ${newStatus}`, "check");
+      renderPatientQueries();
+    }
+  }
+
+  function saveDoctorReply(id) {
+    const replyInput = document.getElementById(`doc-reply-input-${id}`);
+    if (!replyInput) return;
+    const text = replyInput.value.trim();
+
+    const q = patientQueries.find(item => item.id === id);
+    if (q) {
+      q.doctorReplyText = text;
+      q.status = "Replied";
+      q.doctorAudioAvailable = true;
+
+      notifications.unshift({
+        id: Date.now(),
+        title: "Doctor Replied to Query #" + id,
+        desc: `Dr. Arvind Varma replied to ${q.patientName}. Audio playback synthesized.`,
+        time: "Just now",
+        unread: true
+      });
+
+      showToast("Doctor's reply and audio dispatched to patient.", "check-circle");
+      renderDoctorDashboard();
+      renderPatientQueries();
+      renderPatientDashboard();
+    }
+  }
+
+  function updateAppointmentStatus(id, status) {
+    const apt = appointmentsList.find(a => a.id === id);
+    if (apt) {
+      apt.status = status;
+      showToast(`Appointment ${id} status set to ${status}`, "calendar");
+      renderAppointments();
+      renderPatientDashboard();
+    }
+  }
+
+  function markReportReviewed(refId) {
+    const rep = uploadedReports.find(r => r.refId === refId);
+    if (rep) {
+      rep.doctorStatus = "Doctor Reviewed";
+      rep.doctorNotes = "Verified by Chief Pathologist Dr. Arvind Varma. Normal physiological parameters.";
+      showToast(`Report #${refId} digitally signed & reviewed.`, "check-circle");
+      renderDoctorDashboard();
+      renderUploadedReports();
+    }
+  }
+
+  /* ==========================================================================
+     11. PATIENT DASHBOARD DATA RENDERING
+     ========================================================================= */
+
+  function renderPatientDashboard() {
+    const qCount = document.getElementById('metric-queries');
+    const rCount = document.getElementById('metric-reports');
+    const aCount = document.getElementById('metric-apts');
+    const cCount = document.getElementById('metric-collections');
+
+    if (qCount) qCount.innerText = patientQueries.length;
+    if (rCount) rCount.innerText = uploadedReports.length;
+    if (aCount) aCount.innerText = appointmentsList.length;
+    if (cCount) cCount.innerText = homeCollections.length;
+
+    const queryList = document.getElementById('patient-dash-query-list');
+    if (queryList) {
+      queryList.innerHTML = patientQueries.slice(0, 3).map(q => `
+        <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50 space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800">Ref #${q.id}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              q.status === 'Replied' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+            }">${q.status}</span>
+          </div>
+          <p class="text-slate-600">"${q.queryText}"</p>
+          ${q.doctorReplyText ? `
+            <div class="mt-2 p-2 rounded-xl bg-white border border-slate-200 text-slate-800">
+              <span class="font-bold text-cyan-800 block text-[11px]">Doctor's Response:</span>
+              <p class="text-[11px] mt-0.5">${q.doctorReplyText}</p>
+              <button onclick="playTextToSpeech('${q.doctorReplyText.replace(/'/g, "\\'")}', '${q.lang}')" class="mt-1.5 text-cyan-700 font-bold hover:underline flex items-center gap-1 text-[11px]">
+                <i data-lucide="volume-2" class="w-3 h-3"></i> Listen (Audio)
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    const aptList = document.getElementById('patient-dash-apt-list');
+    if (aptList) {
+      aptList.innerHTML = appointmentsList.slice(0, 2).map(apt => `
+        <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800">${apt.doctor.split('(')[0]}</span>
+            <span class="text-[10px] font-bold text-teal-700">${apt.status}</span>
+          </div>
+          <div class="text-slate-500 text-[11px] mt-1">${apt.date} • ${apt.time}</div>
+        </div>
+      `).join('');
+    }
+
+    lucide.createIcons();
+  }
+
+  /* ==========================================================================
+     12. ADMIN CONTROL DESK & TEST MANAGER
+     ========================================================================== */
+
+  function renderAdminDashboard() {
+    document.getElementById('admin-count-tests').innerText = testsCatalog.length;
+    document.getElementById('admin-count-collections').innerText = homeCollections.length;
+    document.getElementById('admin-count-queries').innerText = patientQueries.length;
+    document.getElementById('admin-count-apts').innerText = appointmentsList.length;
+
+    // Render Tests Table for instant price edit
+    const tbody = document.getElementById('admin-tests-table-body');
+    if (tbody) {
+      tbody.innerHTML = testsCatalog.map(t => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-3 px-4 font-bold text-slate-900">${t.name} <br/><span class="text-[10px] text-slate-400 font-normal">#${t.id}</span></td>
+          <td class="py-3 px-4 text-slate-600">${t.sample}</td>
+          <td class="py-3 px-4 text-slate-600">${t.prep}</td>
+          <td class="py-3 px-4">
+            <input type="number" value="${t.price}" onchange="updateTestPrice('${t.id}', this.value)" class="w-24 px-2 py-1 bg-white border border-slate-300 rounded text-xs font-bold text-cyan-800">
+          </td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="removeTestFromAdmin('${t.id}')" class="text-rose-600 hover:text-rose-800 font-bold">Remove</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Populate Settings Form
+    document.getElementById('cfg-phone').value = clinicConfig.phone;
+    document.getElementById('cfg-whatsapp').value = clinicConfig.whatsapp;
+    document.getElementById('cfg-email').value = clinicConfig.email;
+    document.getElementById('cfg-address').value = clinicConfig.address;
+    document.getElementById('cfg-hours').value = clinicConfig.hours;
+  }
+
+  function updateTestPrice(id, newPrice) {
+    const t = testsCatalog.find(item => item.id === id);
+    if (t) {
+      t.price = parseInt(newPrice, 10);
+      showToast(`Updated ${t.name} price to ₹${newPrice}`, "check-circle");
+      renderTestsCatalog();
+    }
+  }
+
+  function removeTestFromAdmin(id) {
+    testsCatalog = testsCatalog.filter(t => t.id !== id);
+    showToast(`Test #${id} removed from active menu`, "trash-2");
+    renderAdminDashboard();
+    renderTestsCatalog();
+  }
+
+  function openAddTestModal() {
+    document.getElementById('admin-add-test-modal').classList.remove('hidden');
+  }
+
+  function closeAddTestModal() {
+    document.getElementById('admin-add-test-modal').classList.add('hidden');
+  }
+
+  function handleAdminAddTest(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-test-name').value;
+    const cat = document.getElementById('new-test-cat').value;
+    const price = parseInt(document.getElementById('new-test-price').value, 10);
+    const sample = document.getElementById('new-test-sample').value;
+    const tat = document.getElementById('new-test-tat').value;
+    const prep = document.getElementById('new-test-prep').value;
+    const purpose = document.getElementById('new-test-purpose').value;
+
+    const newId = "T-" + (100 + testsCatalog.length + 1);
+    testsCatalog.push({
+      id: newId,
+      name,
+      category: cat,
+      price,
+      sample,
+      prep,
+      tat,
+      purpose: purpose || "Standard clinical pathology assessment"
+    });
+
+    closeAddTestModal();
+    e.target.reset();
+    showToast(`Added '${name}' to catalog (ID: ${newId})`, "check-circle");
+    renderAdminDashboard();
+    renderTestsCatalog();
+  }
+
+  function handleAdminSettingsSave(e) {
+    e.preventDefault();
+    clinicConfig.phone = document.getElementById('cfg-phone').value;
+    clinicConfig.whatsapp = document.getElementById('cfg-whatsapp').value;
+    clinicConfig.email = document.getElementById('cfg-email').value;
+    clinicConfig.address = document.getElementById('cfg-address').value;
+    clinicConfig.hours = document.getElementById('cfg-hours').value;
+
+    // Sync to front contact views
+    document.getElementById('disp-phone').innerText = clinicConfig.phone;
+    document.getElementById('disp-whatsapp').innerText = clinicConfig.whatsapp;
+    document.getElementById('disp-email').innerText = clinicConfig.email;
+    document.getElementById('disp-address').innerText = clinicConfig.address;
+    document.getElementById('disp-hours').innerText = clinicConfig.hours;
+
+    showToast("Laboratory settings updated successfully.", "check-circle");
+  }
+
+  /* ==========================================================================
+     13. SEARCH, CONTACT & NOTIFICATIONS HELPERS
+     ========================================================================== */
+
+  function handleGlobalSearch(e) {
+    if (e.key === 'Enter') {
+      triggerGlobalSearch();
+    }
+  }
+
+  function triggerGlobalSearch() {
+    const query = (document.getElementById('global-search-input').value || '').trim().toLowerCase();
+    if (!query) {
+      showToast("Please enter a test, disease, or doctor keyword to search.", "info");
+      return;
+    }
+
+    navigateTo('tests');
+    const filterInput = document.getElementById('test-filter-input');
+    if (filterInput) {
+      filterInput.value = query;
+      filterTestsByKeyword();
+    }
+    showToast(`Showing diagnostic search results for "${query}"`, "search");
+  }
+
+  function handleContactMessage(e) {
+    e.preventDefault();
+    showToast("Thank you. A Micro Path laboratory desk officer will contact you within 30 minutes.", "check-circle");
+    e.target.reset();
+  }
+
+  function renderNotifications() {
+    const list = document.getElementById('notification-list');
+    const badge = document.getElementById('notif-badge');
+    if (!list) return;
+
+    const unreadCount = notifications.filter(n => n.unread).length;
+    if (badge) {
+      badge.style.display = unreadCount > 0 ? 'block' : 'none';
+    }
+
+    if (notifications.length === 0) {
+      list.innerHTML = `<div class="text-center py-12 text-slate-400 text-xs">No new notifications</div>`;
+      return;
+    }
+
+    list.innerHTML = notifications.map(n => `
+      <div class="p-3.5 rounded-xl border ${n.unread ? 'bg-cyan-50/50 border-cyan-200' : 'bg-white border-slate-200'} text-xs space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-900">${n.title}</span>
+          <span class="text-[10px] text-slate-400">${n.time}</span>
+        </div>
+        <p class="text-slate-600 text-[11px] leading-relaxed">${n.desc}</p>
+      </div>
+    `).join('');
+
+    lucide.createIcons();
+  }
+
+  function clearAllNotifications() {
+    notifications = [];
+    renderNotifications();
+    showToast("All notifications cleared.", "trash-2");
+  }
+
+  /* ==========================================================================
+     14. INITIAL BOOTSTRAP
+     ========================================================================== */
+  window.addEventListener('DOMContentLoaded', () => {
+    // Render initial catalog, tables and queues
+    renderTestsCatalog();
+    renderPatientQueries();
+    renderAppointments();
+    renderUploadedReports();
+    renderPatientDashboard();
+    renderNotifications();
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Default Date input constraints to today or future
+    const today = new Date().toISOString().split('T')[0];
+    if (document.getElementById('apt-date')) document.getElementById('apt-date').min = today;
+    if (document.getElementById('col-date')) document.getElementById('col-date').min = today;
+
+    // Initialize voices if available
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  });
+</script>
+
+</body>
+</html>
